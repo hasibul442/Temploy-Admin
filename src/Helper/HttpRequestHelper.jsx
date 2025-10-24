@@ -1,6 +1,6 @@
 
 export async function PostRequestData(data, url) {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/${url}`, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/${url}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -16,10 +16,11 @@ export async function PostRequestData(data, url) {
 }
 
 export async function GetRequestData(url) {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/${url}`, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/${url}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
     },
   });
 
@@ -32,7 +33,7 @@ export async function GetRequestData(url) {
 
 
 export async function DeleteRequestData(id, url) {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/${url}/${id}`, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/${url}/${id}`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
@@ -47,7 +48,7 @@ export async function DeleteRequestData(id, url) {
 }
 
 export async function GetDetails(url) {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/${url}`, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/${url}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -62,7 +63,7 @@ export async function GetDetails(url) {
 }
 
 export async function UpdateRequestData(data, url) {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/${url}`, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/${url}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",

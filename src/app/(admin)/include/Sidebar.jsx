@@ -54,6 +54,20 @@ function Sidebar() {
             <li className="nav-item">
               <Link
                 className={`nav-link ${
+                  pathname === "/categories" ? "active" : ""
+                }`}
+                href="/categories"
+              >
+                <div className="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+                  <MdCategory size={16} />
+                </div>
+                <span className="nav-link-text ms-1">Categories</span>
+              </Link>
+            </li>
+
+            <li className="nav-item">
+              <Link
+                className={`nav-link ${
                   pathname === "/educations" ? "active" : ""
                 }`}
                 href="/educations"
@@ -76,20 +90,6 @@ function Sidebar() {
                   <MdTypeSpecimen size={16} />
                 </div>
                 <span className="nav-link-text ms-1">Specialities</span>
-              </Link>
-            </li>
-
-            <li className="nav-item">
-              <Link
-                className={`nav-link ${
-                  pathname === "/test/categories" ? "active" : ""
-                }`}
-                href="/test/categories"
-              >
-                <div className="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-                  <MdCategory size={16} />
-                </div>
-                <span className="nav-link-text ms-1">Test Categories</span>
               </Link>
             </li>
 

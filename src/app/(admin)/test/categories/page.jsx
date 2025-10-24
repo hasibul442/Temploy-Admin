@@ -12,19 +12,37 @@ function Page() {
   const [testCategories, setTestCategories] = useState([]);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [iconUrl, setIconUrl] = useState("");
+  const [slug, setSlug] = useState("");
+  const [status, setStatus] = useState(true);
+  const [createdBy, setCreatedBy] = useState("");
+  const [updatedBy, setUpdatedBy] = useState("");
 
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
 
   const handleSubmitTestCategory = (e) => {
     e.preventDefault();
-    const newTest = { name, description, status: true };
+    const newTest = { 
+      cat_name : name, 
+      cat_icon_url : iconUrl,
+      status: status,
+      description: description,
+      slug: slug,
+      // created_by: createdBy,
+      // updated_by: updatedBy,
+    };
 
     PostRequestData(newTest, "api/v1/test/category")
       .then((data) => {
         setTestCategories([...testCategories, data]);
         setName("");
         setDescription("");
+        setIconUrl("");
+        setSlug("");
+        setStatus(true);
+        setCreatedBy("");
+        setUpdatedBy("");
       })
       .then(() => {
         Swal.fire({
