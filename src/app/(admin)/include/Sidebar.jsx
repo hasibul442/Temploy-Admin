@@ -34,6 +34,17 @@ function Sidebar() {
           id="sidenav-collapse-main"
         >
           <ul className="navbar-nav">
+            <li className="nav-item">
+              <Link
+                className={`nav-link ${pathname === "/" ? "active" : ""}`}
+                href="/"
+              >
+                <div className="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+                  <FaIcons.FaBuffer size={16} />
+                </div>
+                <span className="nav-link-text ms-1">Dashboard</span>
+              </Link>
+            </li>
             <li className="nav-item mt-3">
               <h6 className="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">
                 General Setting
@@ -88,17 +99,6 @@ function Sidebar() {
               </h6>
             </li>
 
-            <li className="nav-item">
-              <Link
-                className={`nav-link ${pathname === "/" ? "active" : ""}`}
-                href="/"
-              >
-                <div className="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-                  <FaIcons.FaBuffer size={16} />
-                </div>
-                <span className="nav-link-text ms-1">Dashboard</span>
-              </Link>
-            </li>
             <li className="nav-item">
               <Link
                 className={`nav-link ${pathname === "/unit" ? "active" : ""}`}
