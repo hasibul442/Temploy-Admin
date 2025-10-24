@@ -23875,7 +23875,7 @@ html {
   bottom: 0;
   width: 100%;
   max-width: 15.625rem !important;
-  overflow-y: auto;
+  overflow-y: hidden;
   padding: 0;
   box-shadow: none;
 }
@@ -23883,7 +23883,7 @@ html {
 .navbar-vertical.navbar-expand-xs .navbar-collapse {
   display: block;
   overflow: auto;
-  height: 100%;
+  height: 90%;
 }
 
 .navbar-vertical.navbar-expand-xs>[class*=container] {
@@ -24547,11 +24547,11 @@ html {
 }
 
 .sidenav .navbar-brand {
-  padding: 1.5rem 2rem;
+  padding: 0.5rem 2rem;
 }
 
 .sidenav-header {
-  height: 4.875rem;
+  height: 2.875rem;
 }
 
 .sidenav-footer .card.card-background:after {

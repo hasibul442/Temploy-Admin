@@ -29,7 +29,6 @@ function Sidebar() {
             <span className="ms-1 font-weight-bold">Hasibul Hasan</span>
           </Link>
         </div>
-        <hr className="horizontal dark mt-0" />
         <div
           className="collapse navbar-collapse  w-auto "
           id="sidenav-collapse-main"
