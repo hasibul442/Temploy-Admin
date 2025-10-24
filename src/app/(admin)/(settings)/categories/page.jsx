@@ -4,10 +4,16 @@ import NoDataFound from "@/Components/NoDataFound/NoDataFound";
 import { GetRequestData, PostRequestData } from "@/Helper/HttpRequestHelper";
 import { Pagination, TextField } from "@mui/material";
 import React, { useEffect, useState } from "react";
+import { Modal } from "react-bootstrap";
 import { MdEditSquare } from "react-icons/md";
 import Swal from "sweetalert2";
 
 function Page() {
+  const [show, setShow] = useState(false);
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
+
   const [categories, setCategories] = useState([]);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -19,7 +25,7 @@ function Page() {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
 
-    const fetchCategories = () => {
+  const fetchCategories = () => {
     GetRequestData(`api/v1/categories?page=${currentPage}&limit=10`).then(
       (data) => {
         console.log(data);
@@ -33,7 +39,8 @@ function Page() {
     const slug = name.toLowerCase().replace(/ /g, "-");
     const newCategory = {
       cat_name: name,
-      cat_icon_url: "https://i.fbcd.co/products/resized/resized-750-500/563d0201e4359c2e890569e254ea14790eb370b71d08b6de5052511cc0352313.jpg",
+      cat_icon_url:
+        "https://i.fbcd.co/products/resized/resized-750-500/563d0201e4359c2e890569e254ea14790eb370b71d08b6de5052511cc0352313.jpg",
       status: status,
       description: description,
       slug: slug,
@@ -45,7 +52,7 @@ function Page() {
       .then((data) => {
         // append the new category into the existing categories.data array
         fetchCategories();
-        
+
         // Reset form fields
         setName("");
         setDescription("");
@@ -61,6 +68,8 @@ function Page() {
           showConfirmButton: false,
           timer: 1500,
         });
+
+        handleClose();
       })
       .catch((error) => {
         console.error(error);
@@ -74,9 +83,13 @@ function Page() {
       });
   };
 
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
+  };
+
   useEffect(() => {
     fetchCategories();
-  }, []);
+  }, [currentPage, searchTerm]);
   return (
     <>
       <div className="row">
@@ -92,8 +105,7 @@ function Page() {
                   <button
                     type="button"
                     className="btn bg-gradient-info"
-                    data-bs-toggle="modal"
-                    data-bs-target="#addCategoryModal"
+                    onClick={handleShow}
                   >
                     Add Category
                   </button>
@@ -156,13 +168,17 @@ function Page() {
                                 {category.description}
                               </span>
                             </td>
-                             <td>
+                            <td>
                               <span className="text-secondary text-xs font-weight-bold">
-                                <img src={category.cat_icon_url} alt="" style={{ 
-                                  height: "50px",
-                                  width: "50px",
-                                  objectFit: "cover"
-                                 }}/>
+                                <img
+                                  src={category.cat_icon_url}
+                                  alt=""
+                                  style={{
+                                    height: "50px",
+                                    width: "50px",
+                                    objectFit: "cover",
+                                  }}
+                                />
                               </span>
                             </td>
                             <td>
@@ -186,7 +202,7 @@ function Page() {
                               <DeleteButton
                                 id={category._id}
                                 service="category"
-                                deleteUrl="api/v1/test/category"
+                                deleteUrl="api/v1/categories"
                               />
                             </td>
                           </tr>
@@ -201,11 +217,11 @@ function Page() {
                 <div className="text-center">
                   <Pagination
                     color="primary"
-                    count={10}
+                    count={categories?.pagination?.totalPages}
                     showFirstButton
                     showLastButton
                     page={currentPage}
-                    // onChange={handlePageChange}
+                    onChange={handlePageChange}
                   />
                 </div>
               </div>
@@ -215,25 +231,15 @@ function Page() {
       </div>
 
       <section>
-        <div
-          className="modal fade"
-          id="addCategoryModal"
-          tabIndex="-1"
-          role="dialog"
-          aria-labelledby="addCategoryModalLabel"
-          aria-hidden="true"
-        >
-          <div className="modal-dialog modal-dialog-centered" role="document">
+        <Modal show={show} onHide={handleClose}>
+          <div className="modal-dialog-centered">
             <div className="modal-content">
               <div className="modal-header">
-                <h5 className="modal-title" id="addCategoryModalLabel">
-                  Add Category
-                </h5>
+                <h5 className="modal-title">Add Category</h5>
                 <button
                   type="button"
                   className="btn-close text-dark"
-                  data-bs-dismiss="modal"
-                  aria-label="Close"
+                  onClick={handleClose}
                 >
                   <span aria-hidden="true">&times;</span>
                 </button>
@@ -306,7 +312,7 @@ function Page() {
               </div>
             </div>
           </div>
-        </div>
+        </Modal>
       </section>
     </>
   );
