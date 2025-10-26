@@ -1,11 +1,19 @@
+"use client";
 import { GetRequestData } from "@/Helper/HttpRequestHelper";
-import React from "react";
+import React, { useState } from "react";
 
 function page() {
+  const [categories, setCategories] = useState([]);
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [iconUrl, setIconUrl] = useState("");
+  const [status, setStatus] = useState(true);
+  const [createdBy, setCreatedBy] = useState("");
+  const [updatedBy, setUpdatedBy] = useState("");
+  const [catId, setCatId] = useState("");
   const fetchData = () => {
     GetRequestData(`api/v1/categories`).then((data) => {
-      console.log(data);
-      setSubcategories(data);
+      setCategories(data);
     });
   };
 
@@ -68,6 +76,63 @@ function page() {
                 <div>
                   <h6>Subcategory Add</h6>
                 </div>
+              </div>
+            </div>
+
+            <div className="card-body px-0 pt-0 pb-2">
+              <div className="p-3">
+                <form>
+                  <div className="row">
+                    <div className="col-6">
+                      <div className="form-group">
+                        <label htmlFor="name">Name</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          id="name"
+                          placeholder="John Doe"
+                          required
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="iconUrl">Icon URL</label>
+                    <input
+                      type="file"
+                      className="form-control"
+                      id="iconUrl"
+                      placeholder="https://example.com/icon.png"
+                      required
+                      onChange={(e) => setIconUrl(e.target.files[0])}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="status">Status</label>
+                    <select
+                      className="form-control"
+                      id="status"
+                      value={status}
+                      onChange={(e) => setStatus(e.target.value)}
+                    >
+                      <option value={true}>Active</option>
+                      <option value={false}>Inactive</option>
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="description">Description</label>
+                    <textarea
+                      className="form-control"
+                      id="description"
+                      rows="3"
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                    ></textarea>
+                  </div>
+                </form>
               </div>
             </div>
           </div>
