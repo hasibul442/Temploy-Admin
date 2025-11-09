@@ -1,8 +1,10 @@
 "use client";
 import DeleteButton from "@/Components/Button/DeleteButton";
 import NoDataFound from "@/Components/NoDataFound/NoDataFound";
+import { toBase64 } from "@/Helper/Hepler";
 import { GetRequestData, PostRequestData } from "@/Helper/HttpRequestHelper";
 import { Pagination, TextField } from "@mui/material";
+import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { Modal } from "react-bootstrap";
 import { MdEditSquare } from "react-icons/md";
@@ -28,22 +30,20 @@ function Page() {
   const fetchCategories = () => {
     GetRequestData(`api/v1/categories?page=${currentPage}&limit=10`).then(
       (data) => {
-        console.log(data);
         setCategories(data);
       }
     );
   };
 
-  const handleSubmitCategory = (e) => {
+  const handleSubmitCategory = async(e) => {
+    const base64String = await toBase64(iconUrl);
+
     e.preventDefault();
-    const slug = name.toLowerCase().replace(/ /g, "-");
     const newCategory = {
       cat_name: name,
-      cat_icon_url:
-        "https://i.fbcd.co/products/resized/resized-750-500/563d0201e4359c2e890569e254ea14790eb370b71d08b6de5052511cc0352313.jpg",
+      cat_icon_url: base64String,
       status: status,
       description: description,
-      slug: slug,
       // created_by: createdBy,
       // updated_by: updatedBy,
     };
@@ -98,7 +98,7 @@ function Page() {
             <div className="card-header pb-0">
               <div className="d-flex justify-content-between">
                 <div>
-                  <h6>Test Category</h6>
+                  <h6>Service Category</h6>
                 </div>
 
                 <div>
@@ -193,12 +193,12 @@ function Page() {
                               </span>
                             </td>
                             <td className="d-flex">
-                              <button
+                              <Link
                                 className="btn btn-outline-info btn-sm p-2 mx-1"
-                                type="button"
+                                href={`/categories/${category._id}`}
                               >
                                 <MdEditSquare size={16} />
-                              </button>
+                              </Link>
                               <DeleteButton
                                 id={category._id}
                                 service="category"
@@ -252,14 +252,14 @@ function Page() {
                       type="text"
                       className="form-control"
                       id="name"
-                      placeholder="John Doe"
+                      placeholder="Fitness & Wellness Support"
                       required
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                     />
                   </div>
                   <div className="form-group">
-                    <label htmlFor="iconUrl">Icon URL</label>
+                    <label htmlFor="iconUrl">Icon</label>
                     <input
                       type="file"
                       className="form-control"
