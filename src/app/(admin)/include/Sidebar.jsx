@@ -5,6 +5,7 @@ import * as FaIcons from "react-icons/fa6";
 import { FaSignOutAlt } from "react-icons/fa";
 import { usePathname } from "next/navigation";
 import { MdCategory, MdTypeSpecimen } from "react-icons/md";
+import { GiLevelEndFlag } from "react-icons/gi";
 
 function Sidebar() {
   const pathname = usePathname() || "";
@@ -26,7 +27,7 @@ function Sidebar() {
               className="navbar-brand-img h-100"
               alt="main_logo"
             />
-            <span className="ms-1 font-weight-bold">Hasibul Hasan</span>
+            <span className="ms-1 font-weight-bold">Temploy</span>
           </Link>
         </div>
         <div
@@ -64,7 +65,7 @@ function Sidebar() {
                 <span className="nav-link-text ms-1">Categories</span>
               </Link>
             </li>
-            
+
             <li className="nav-item">
               <Link
                 className={`nav-link ${
@@ -80,6 +81,18 @@ function Sidebar() {
             </li>
 
             <li className="nav-item">
+              <Link
+                className={`nav-link ${pathname === "/levels" ? "active" : ""}`}
+                href="/levels"
+              >
+                <div className="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+                  <GiLevelEndFlag size={16} />
+                </div>
+                <span className="nav-link-text ms-1">Levels</span>
+              </Link>
+            </li>
+
+            {/* <li className="nav-item">
               <Link
                 className={`nav-link ${
                   pathname === "/educations" ? "active" : ""
@@ -105,7 +118,7 @@ function Sidebar() {
                 </div>
                 <span className="nav-link-text ms-1">Specialities</span>
               </Link>
-            </li>
+            </li> */}
 
             <li className="nav-item mt-3">
               <h6 className="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">
@@ -115,92 +128,16 @@ function Sidebar() {
 
             <li className="nav-item">
               <Link
-                className={`nav-link ${pathname === "/unit" ? "active" : ""}`}
-                href="/unit"
+                className={`nav-link ${pathname === "/skills" ? "active" : ""}`}
+                href="/skills"
               >
                 <div className="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
                   <FaIcons.FaHive size={16} />
                 </div>
-                <span className="nav-link-text ms-1">Units</span>
+                <span className="nav-link-text ms-1">Skills</span>
               </Link>
             </li>
-            <li className="nav-item">
-              <Link
-                className={`nav-link ${pathname === "/roles" ? "active" : ""}`}
-                href="/roles"
-              >
-                <div className="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-                  <FaIcons.FaRocket size={16} />
-                </div>
-                <span className="nav-link-text ms-1">Roles</span>
-              </Link>
-            </li>
-            <li className="nav-item">
-              <Link
-                className={`nav-link ${pathname === "/users" ? "active" : ""}`}
-                href="/users"
-              >
-                <div className="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-                  <FaIcons.FaArrowsTurnRight size={16} />
-                </div>
-                <span className="nav-link-text ms-1">Users</span>
-              </Link>
-            </li>
-            <li className="nav-item">
-              <Link
-                className={`nav-link ${
-                  pathname === "/patients" ? "active" : ""
-                }`}
-                href="/patients"
-              >
-                <div className="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-                  <FaIcons.FaBook size={16} />
-                </div>
-                <span className="nav-link-text ms-1">Patients</span>
-              </Link>
-            </li>
-            <li className="nav-item">
-              <Link
-                className={`nav-link ${
-                  pathname === "/appointments" ? "active" : ""
-                }`}
-                href="/appointments"
-              >
-                <div className="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-                  <FaIcons.FaAtom size={16} />
-                </div>
-                <span className="nav-link-text ms-1">Appointments</span>
-              </Link>
-            </li>
-            <li className="nav-item mt-3">
-              <h6 className="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">
-                Test
-              </h6>
-            </li>
-            <li className="nav-item">
-              <Link
-                className={`nav-link ${
-                  pathname === "/test/categories" ? "active" : ""
-                }`}
-                href="/test/categories"
-              >
-                <div className="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-                  <FaIcons.FaAward size={16} />
-                </div>
-                <span className="nav-link-text ms-1">Test Categories</span>
-              </Link>
-            </li>
-            <li className="nav-item">
-              <Link
-                className={`nav-link ${pathname === "/test" ? "active" : ""}`}
-                href="/test"
-              >
-                <div className="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-                  <FaIcons.FaBlog size={16} />
-                </div>
-                <span className="nav-link-text ms-1">Test</span>
-              </Link>
-            </li>
+
 
             <li className="nav-item">
               <Link className="nav-link  " href="/admin">
