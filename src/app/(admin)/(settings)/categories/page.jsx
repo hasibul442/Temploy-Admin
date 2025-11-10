@@ -35,7 +35,7 @@ function Page() {
     );
   };
 
-  const handleSubmitCategory = async(e) => {
+  const handleSubmitCategory = async (e) => {
     const base64String = await toBase64(iconUrl);
 
     e.preventDefault();
@@ -111,7 +111,8 @@ function Page() {
                   </button>
                 </div>
               </div>
-
+            </div>
+            <div className="card-body px-0 pt-0 pb-2">
               <div className="d-flex justify-content-end mt-3 mb-3">
                 <TextField
                   label="Search"
@@ -120,110 +121,107 @@ function Page() {
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
-
-              <div className="card-body px-0 pt-0 pb-2">
-                <div className="p-0">
-                  <table
-                    className="table align-items-center mb-0"
-                    style={{ width: "100% !important" }}
-                  >
-                    <thead>
-                      <tr>
-                        <th className="text-center text-secondary text-xxs font-weight-bolder opacity-7">
-                          #
-                        </th>
-                        <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
-                          Name
-                        </th>
-                        <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                          Description
-                        </th>
-                        <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                          Icon
-                        </th>
-                        <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                          Status
-                        </th>
-                        <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                          Action
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {categories?.data?.length > 0 ? (
-                        categories?.data.map((category, index) => (
-                          <tr key={index}>
-                            <td className="text-center">
-                              <span className="text-secondary text-xs font-weight-bold">
-                                {index + 1 + (currentPage - 1) * 10}
-                              </span>
-                            </td>
-                            <td>
-                              <span className="text-secondary text-xs font-weight-bold">
-                                {category.cat_name}
-                              </span>
-                            </td>
-                            <td>
-                              <span className="text-secondary text-xs font-weight-bold">
-                                {category.description}
-                              </span>
-                            </td>
-                            <td>
-                              <span className="text-secondary text-xs font-weight-bold">
-                                <img
-                                  src={category.cat_icon_url}
-                                  alt=""
-                                  style={{
-                                    height: "50px",
-                                    width: "50px",
-                                    objectFit: "cover",
-                                  }}
-                                />
-                              </span>
-                            </td>
-                            <td>
-                              <span
-                                className={`badge category.status ${
-                                  category.status
-                                    ? "bg-gradient-success"
-                                    : "bg-gradient-danger"
-                                } text-xs font-weight-bold`}
-                              >
-                                {category.status ? "Active" : "Inactive"}
-                              </span>
-                            </td>
-                            <td className="d-flex">
-                              <Link
-                                className="btn btn-outline-info btn-sm p-2 mx-1"
-                                href={`/categories/${category._id}`}
-                              >
-                                <MdEditSquare size={16} />
-                              </Link>
-                              <DeleteButton
-                                id={category._id}
-                                service="category"
-                                deleteUrl="api/v1/categories"
+              <div className="p-0">
+                <table
+                  className="table align-items-center mb-0"
+                  style={{ width: "100% !important" }}
+                >
+                  <thead>
+                    <tr>
+                      <th className="text-center text-secondary text-xxs font-weight-bolder opacity-7">
+                        #
+                      </th>
+                      <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                        Name
+                      </th>
+                      <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                        Description
+                      </th>
+                      <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                        Icon
+                      </th>
+                      <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                        Status
+                      </th>
+                      <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                        Action
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {categories?.data?.length > 0 ? (
+                      categories?.data.map((category, index) => (
+                        <tr key={index}>
+                          <td className="text-center">
+                            <span className="text-secondary text-xs font-weight-bold">
+                              {index + 1 + (currentPage - 1) * 10}
+                            </span>
+                          </td>
+                          <td>
+                            <span className="text-secondary text-xs font-weight-bold">
+                              {category.cat_name}
+                            </span>
+                          </td>
+                          <td>
+                            <span className="text-secondary text-xs font-weight-bold">
+                              {category.description}
+                            </span>
+                          </td>
+                          <td>
+                            <span className="text-secondary text-xs font-weight-bold">
+                              <img
+                                src={category.cat_icon_url}
+                                alt=""
+                                style={{
+                                  height: "50px",
+                                  width: "50px",
+                                  objectFit: "cover",
+                                }}
                               />
-                            </td>
-                          </tr>
-                        ))
-                      ) : (
-                        <NoDataFound colSpan={5} />
-                      )}
-                    </tbody>
-                  </table>
-                </div>
+                            </span>
+                          </td>
+                          <td>
+                            <span
+                              className={`badge category.status ${
+                                category.status
+                                  ? "bg-gradient-success"
+                                  : "bg-gradient-danger"
+                              } text-xs font-weight-bold`}
+                            >
+                              {category.status ? "Active" : "Inactive"}
+                            </span>
+                          </td>
+                          <td className="d-flex">
+                            <Link
+                              className="btn btn-outline-info btn-sm p-2 mx-1"
+                              href={`/categories/${category._id}`}
+                            >
+                              <MdEditSquare size={16} />
+                            </Link>
+                            <DeleteButton
+                              id={category._id}
+                              service="category"
+                              deleteUrl="api/v1/categories"
+                            />
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <NoDataFound colSpan={5} />
+                    )}
+                  </tbody>
+                </table>
+              </div>
 
-                <div className="text-center">
-                  <Pagination
-                    color="primary"
-                    count={categories?.pagination?.totalPages}
-                    showFirstButton
-                    showLastButton
-                    page={currentPage}
-                    onChange={handlePageChange}
-                  />
-                </div>
+              <div className="text-center">
+                <Pagination
+                  color="primary"
+                  count={categories?.pagination?.totalPages}
+                  showFirstButton
+                  showLastButton
+                  page={currentPage}
+                  onChange={handlePageChange}
+                />
               </div>
             </div>
           </div>
