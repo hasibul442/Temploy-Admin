@@ -16,7 +16,6 @@ function Page() {
   const fetchData = () => {
     GetRequestData(`api/v1/subcategories?page=${currentPage}&limit=10`).then(
       (data) => {
-        console.log(data);
         setSubcategories(data);
       }
     );
