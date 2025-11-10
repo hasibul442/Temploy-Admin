@@ -5,24 +5,10 @@ import { GetRequestData, PostRequestData } from "@/Helper/HttpRequestHelper";
 import { Pagination, TextField } from "@mui/material";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
-import { Modal } from "react-bootstrap";
 import { MdEditSquare } from "react-icons/md";
-import Swal from "sweetalert2";
 
 function Page() {
-  const [show, setShow] = useState(false);
-
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
-
   const [subcategories, setSubcategories] = useState([]);
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [iconUrl, setIconUrl] = useState("");
-  const [status, setStatus] = useState(true);
-  const [createdBy, setCreatedBy] = useState("");
-  const [updatedBy, setUpdatedBy] = useState("");
-  const [catId, setCatId] = useState("");
 
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
@@ -51,7 +37,7 @@ function Page() {
             <div className="card-header pb-0">
               <div className="d-flex justify-content-between">
                 <div>
-                  <h6>Test Category</h6>
+                  <h6>Sub-Category/Service List</h6>
                 </div>
 
                 <div>
@@ -85,7 +71,10 @@ function Page() {
                         #
                       </th>
                       <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
-                        Name
+                        Sub Category
+                      </th>
+                      <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                        Category
                       </th>
                       <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                         Description
@@ -103,27 +92,34 @@ function Page() {
                   </thead>
                   <tbody>
                     {subcategories?.data?.length > 0 ? (
-                      subcategories?.data.map((category, index) => (
+                      subcategories?.data.map((sub_cat, index) => (
                         <tr key={index}>
                           <td className="text-center">
                             <span className="text-secondary text-xs font-weight-bold">
                               {index + 1 + (currentPage - 1) * 10}
                             </span>
                           </td>
+
                           <td>
                             <span className="text-secondary text-xs font-weight-bold">
-                              {category.cat_name}
+                              {sub_cat.sub_cat_name}
                             </span>
                           </td>
                           <td>
                             <span className="text-secondary text-xs font-weight-bold">
-                              {category.description}
+                              {sub_cat?.cat_id?.cat_name}
                             </span>
                           </td>
-                          <td>
-                            <span className="text-secondary text-xs font-weight-bold">
+                          <td
+                            style={{ width: "250px" }}
+                            className="text-dark text-xs font-weight-bold"
+                          >
+                            {sub_cat.description}
+                          </td>
+                          <td className="text-center">
+                            <span className="text-secondary">
                               <img
-                                src={category.cat_icon_url}
+                                src={sub_cat.sub_cat_icon_url}
                                 alt=""
                                 style={{
                                   height: "50px",
@@ -136,12 +132,12 @@ function Page() {
                           <td>
                             <span
                               className={`badge category.status ${
-                                category.status
+                                sub_cat.status
                                   ? "bg-gradient-success"
                                   : "bg-gradient-danger"
                               } text-xs font-weight-bold`}
                             >
-                              {category.status ? "Active" : "Inactive"}
+                              {sub_cat.status ? "Active" : "Inactive"}
                             </span>
                           </td>
                           <td className="d-flex">
@@ -152,21 +148,21 @@ function Page() {
                               <MdEditSquare size={16} />
                             </button>
                             <DeleteButton
-                              id={category._id}
-                              service="category"
-                              deleteUrl="api/v1/categories"
+                              id={sub_cat._id}
+                              service="Subcategories"
+                              deleteUrl="api/v1/subcategories"
                             />
                           </td>
                         </tr>
                       ))
                     ) : (
-                      <NoDataFound colSpan={5} />
+                      <NoDataFound colSpan={7} />
                     )}
                   </tbody>
                 </table>
               </div>
 
-              <div className="text-center">
+              <div className="text-center d-flex justify-content-center mt-4">
                 <Pagination
                   color="primary"
                   count={subcategories?.pagination?.totalPages}
