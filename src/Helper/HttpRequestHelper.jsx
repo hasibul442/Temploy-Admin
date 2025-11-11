@@ -8,9 +8,9 @@ export async function PostRequestData(data, url) {
     body: JSON.stringify(data),
   });
 
-  if (!res.ok) {
-    throw new Error("Failed to create");
-  }
+ // if (!res.ok) {
+   // throw new Error("Failed to create");
+ // }
 
   return res.json();
 }
