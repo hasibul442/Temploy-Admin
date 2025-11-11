@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import { usePathname } from "next/navigation";
+import Cookies from "js-cookie";
 
 function Navbar() {
   const pathname = usePathname() || "";
@@ -13,6 +14,10 @@ function Navbar() {
     return { href, label };
   });
   const lastLabel = crumbs.length ? crumbs[crumbs.length - 1].label : "Dashboard";
+
+  const handleSignOut = () => {
+    Cookies.remove("token");
+  }
 
   return (
     <>
@@ -59,7 +64,7 @@ function Navbar() {
               <li className="nav-item d-flex align-items-center">
                 <a
                   href="#"
-                  onClick={(e) => e.preventDefault()}
+                  onClick={handleSignOut}
                   className="nav-link text-body font-weight-bold px-0"
                 >
                   <i className="fa fa-user me-sm-1"></i>
