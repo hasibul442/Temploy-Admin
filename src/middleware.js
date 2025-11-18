@@ -8,7 +8,7 @@ export function middleware(request) {
   const publicRoutes = ['/auth/login', '/auth/register'];
 
   const isPublicRoute = publicRoutes.includes(pathname);
-  if (isPublicRoute === false && token == "undefined" || !token) {
+  if (isPublicRoute == false && (token == "undefined" || !token)) {
     console.log('Redirecting to login - no token');
     return NextResponse.redirect(new URL('/auth/login', request.url));
   }
