@@ -8,13 +8,14 @@ import { toast } from "react-toastify";
 function Page() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
   const handleLogin = async () => {
     PostRequestData({ email, password }, "api/v1/auth/employee/login")
       .then((response) => {
         if (response.status == 200) {
           console.log(response);
           Cookies.set("token", response.token.token, { expires: 1 });
+          toast.success("Login successful");
+            window.location.href = "/";
         } else {
           toast.error(response.message || "Login failed");
         }
