@@ -2,14 +2,6 @@
 import DeleteButton from "@/Components/Button/DeleteButton";
 import NoDataFound from "@/Components/NoDataFound/NoDataFound";
 import { GetRequestData } from "@/Helper/HttpRequestHelper";
-import {
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  CardMedia,
-  Typography,
-} from "@mui/material";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { MdEditSquare } from "react-icons/md";
@@ -34,7 +26,7 @@ function Page() {
             <div className="card-header pb-0">
               <div className="d-flex justify-content-between">
                 <div>
-                  <h6>Levels</h6>
+                  <h6>Offers</h6>
                 </div>
 
                 <div>
@@ -43,7 +35,7 @@ function Page() {
                     className="btn bg-gradient-info"
                     // onClick={handleShow}
                   >
-                    Add Banner
+                    Add Offers
                   </button>
                 </div>
               </div>
@@ -80,13 +72,13 @@ function Page() {
                           <div className="card-footer">
                             <Link
                               className="btn btn-outline-info btn-sm p-2 mx-1"
-                              href={`/banners/${item._id}`}
+                              href={`/offers/${item._id}`}
                             >
                               <MdEditSquare size={16} />
                             </Link>
                             <DeleteButton
                               id={item._id}
-                              service="Banner"
+                              service="Offer"
                               deleteUrl="api/v1/banner"
                             />
                             <h6

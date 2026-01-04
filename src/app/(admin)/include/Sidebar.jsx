@@ -4,7 +4,7 @@ import React from "react";
 import * as FaIcons from "react-icons/fa6";
 import { FaSignOutAlt } from "react-icons/fa";
 import { usePathname } from "next/navigation";
-import { MdCategory, MdTypeSpecimen } from "react-icons/md";
+import { MdCategory, MdCurrencyExchange, MdLocalOffer, MdTypeSpecimen } from "react-icons/md";
 import { GiLevelEndFlag } from "react-icons/gi";
 
 function Sidebar() {
@@ -54,9 +54,8 @@ function Sidebar() {
 
             <li className="nav-item">
               <Link
-                className={`nav-link ${
-                  pathname === "/categories" ? "active" : ""
-                }`}
+                className={`nav-link ${pathname === "/categories" ? "active" : ""
+                  }`}
                 href="/categories"
               >
                 <div className="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
@@ -68,9 +67,8 @@ function Sidebar() {
 
             <li className="nav-item">
               <Link
-                className={`nav-link ${
-                  pathname === "/subcategories" ? "active" : ""
-                }`}
+                className={`nav-link ${pathname === "/subcategories" ? "active" : ""
+                  }`}
                 href="/subcategories"
               >
                 <div className="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
@@ -89,6 +87,18 @@ function Sidebar() {
                   <GiLevelEndFlag size={16} />
                 </div>
                 <span className="nav-link-text ms-1">Levels</span>
+              </Link>
+            </li>
+
+            <li className="nav-item">
+              <Link
+                className={`nav-link ${pathname === "/currencies" ? "active" : ""}`}
+                href="/currencies"
+              >
+                <div className="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+                  <MdCurrencyExchange size={16} />
+                </div>
+                <span className="nav-link-text ms-1">Currencies</span>
               </Link>
             </li>
 
@@ -138,6 +148,17 @@ function Sidebar() {
               </Link>
             </li>
 
+            <li className="nav-item">
+              <Link
+                className={`nav-link ${pathname === "/offers" ? "active" : ""}`}
+                href="/offers"
+              >
+                <div className="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+                  <MdLocalOffer size={16} />
+                </div>
+                <span className="nav-link-text ms-1">Offers</span>
+              </Link>
+            </li>
 
             <li className="nav-item">
               <Link className="nav-link  " href="/admin">

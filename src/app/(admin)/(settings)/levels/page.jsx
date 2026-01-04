@@ -20,7 +20,7 @@ function Page() {
   const [status, setStatus] = useState(true);
 
   const fetchData = () => {
-    GetRequestData(`api/v1/levels`).then((data) => {
+    GetRequestData(`api/v1/levels`, false).then((data) => {
       setData(data);
     });
   };

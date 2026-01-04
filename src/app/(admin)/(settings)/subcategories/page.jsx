@@ -14,7 +14,7 @@ function Page() {
   const [searchTerm, setSearchTerm] = useState("");
 
   const fetchData = () => {
-    GetRequestData(`api/v1/subcategories?page=${currentPage}&limit=10`).then(
+    GetRequestData(`api/v1/subcategories?page=${currentPage}&limit=10`, false).then(
       (data) => {
         setSubcategories(data);
       }

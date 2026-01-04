@@ -16,7 +16,7 @@ function Page() {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
-  const [categories, setCategories] = useState([]);
+  const [currencies, setCurrencies] = useState([]);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [iconUrl, setIconUrl] = useState("");
@@ -27,60 +27,13 @@ function Page() {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const fetchCategories = () => {
-    GetRequestData(`api/v1/categories?page=${currentPage}&limit=10`, false).then(
+  const fetchCurrencies = () => {
+    GetRequestData(`api/v1/currency?page=${currentPage}&limit=10`, false).then(
       (data) => {
-        setCategories(data);
+        console.log(data);
+        setCurrencies(data);
       }
     );
-  };
-
-  const handleSubmitCategory = async (e) => {
-    const base64String = await toBase64(iconUrl);
-
-    e.preventDefault();
-    const newCategory = {
-      cat_name: name,
-      cat_icon_url: base64String,
-      status: status,
-      description: description,
-      // created_by: createdBy,
-      // updated_by: updatedBy,
-    };
-
-    PostRequestData(newCategory, "api/v1/categories")
-      .then((data) => {
-        // append the new category into the existing categories.data array
-        fetchCategories();
-
-        // Reset form fields
-        setName("");
-        setDescription("");
-        setIconUrl("");
-        setStatus(true);
-        setCreatedBy("");
-        setUpdatedBy("");
-
-        Swal.fire({
-          position: "top-end",
-          icon: "success",
-          title: "Your work has been saved",
-          showConfirmButton: false,
-          timer: 1500,
-        });
-
-        handleClose();
-      })
-      .catch((error) => {
-        console.error(error);
-        Swal.fire({
-          position: "top-end",
-          icon: "error",
-          title: "Failed to save category",
-          showConfirmButton: false,
-          timer: 1500,
-        });
-      });
   };
 
   const handlePageChange = (event, value) => {
@@ -88,7 +41,7 @@ function Page() {
   };
 
   useEffect(() => {
-    fetchCategories();
+    fetchCurrencies();
   }, [currentPage, searchTerm]);
   return (
     <>
@@ -98,7 +51,7 @@ function Page() {
             <div className="card-header pb-0">
               <div className="d-flex justify-content-between">
                 <div>
-                  <h6>Service Category</h6>
+                  <h6>Currency</h6>
                 </div>
 
                 <div>
@@ -107,7 +60,7 @@ function Page() {
                     className="btn bg-gradient-info"
                     onClick={handleShow}
                   >
-                    Add Category
+                    Add Currency
                   </button>
                 </div>
               </div>
@@ -132,13 +85,13 @@ function Page() {
                         #
                       </th>
                       <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                        Code
+                      </th>
+                      <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                         Name
                       </th>
                       <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                        Description
-                      </th>
-                      <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                        Icon
+                        symbol_native
                       </th>
                       <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                         Status
@@ -149,8 +102,8 @@ function Page() {
                     </tr>
                   </thead>
                   <tbody>
-                    {categories?.data?.length > 0 ? (
-                      categories?.data.map((category, index) => (
+                    {currencies?.data?.length > 0 ? (
+                      currencies?.data.map((currency, index) => (
                         <tr key={index}>
                           <td className="text-center">
                             <span className="text-secondary text-xs font-weight-bold">
@@ -159,49 +112,41 @@ function Page() {
                           </td>
                           <td>
                             <span className="text-secondary text-xs font-weight-bold">
-                              {category.cat_name}
+                              {currency.code}
                             </span>
                           </td>
                           <td>
                             <span className="text-secondary text-xs font-weight-bold">
-                              {category.description}
+                              {currency.name}
                             </span>
                           </td>
                           <td>
                             <span className="text-secondary text-xs font-weight-bold">
-                              <img
-                                src={category.cat_icon_url}
-                                alt=""
-                                style={{
-                                  height: "50px",
-                                  width: "50px",
-                                  objectFit: "cover",
-                                }}
-                              />
+                              {currency.symbol_native}
                             </span>
                           </td>
                           <td>
                             <span
-                              className={`badge category.status ${
-                                category.status
+                              className={`badge currency.status ${
+                                currency?.status
                                   ? "bg-gradient-success"
                                   : "bg-gradient-danger"
                               } text-xs font-weight-bold`}
                             >
-                              {category.status ? "Active" : "Inactive"}
+                              {currency?.status ? "Active" : "Inactive"}
                             </span>
                           </td>
                           <td className="d-flex">
                             <Link
                               className="btn btn-outline-info btn-sm p-2 mx-1"
-                              href={`/categories/${category._id}`}
+                              href={`/categories/${currency._id}`}
                             >
                               <MdEditSquare size={16} />
                             </Link>
                             <DeleteButton
-                              id={category._id}
-                              service="category"
-                              deleteUrl="api/v1/categories"
+                              id={currency._id}
+                              service="currency"
+                              deleteUrl="api/v1/currencies"
                             />
                           </td>
                         </tr>
@@ -213,7 +158,7 @@ function Page() {
                 </table>
               </div>
 
-              <div className="text-center">
+              {/* <div className="text-center">
                 <Pagination
                   color="primary"
                   count={categories?.pagination?.totalPages}
@@ -222,7 +167,7 @@ function Page() {
                   page={currentPage}
                   onChange={handlePageChange}
                 />
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
@@ -233,7 +178,7 @@ function Page() {
           <div className="modal-dialog-centered">
             <div className="modal-content">
               <div className="modal-header">
-                <h5 className="modal-title">Add Category</h5>
+                <h5 className="modal-title">Add Currency</h5>
                 <button
                   type="button"
                   className="btn-close text-dark"
@@ -303,7 +248,7 @@ function Page() {
                 <button
                   type="button"
                   className="btn bg-gradient-info"
-                  onClick={handleSubmitCategory}
+                //   onClick={handleSubmitCurrency}
                 >
                   Save changes
                 </button>

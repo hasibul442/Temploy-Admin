@@ -12,7 +12,7 @@ function Page() {
   const [currentPage, setCurrentPage] = useState(1);
 
   const fetchData = () => {
-    GetRequestData(`api/v1/skills?page=${currentPage}&limit=10`).then(
+    GetRequestData(`api/v1/skills?page=${currentPage}&limit=10`, true).then(
       (data) => {
         setData(data);
       }

@@ -22,7 +22,7 @@ function page() {
   const [catId, setCatId] = useState("");
 
   const fetchCatData = () => {
-    GetRequestData(`api/v1/categories`).then((data) => {
+    GetRequestData(`api/v1/categories`, false).then((data) => {
       setCategories(data);
     });
   };

@@ -1,3 +1,4 @@
+import Cookies from "js-cookie";
 
 export async function PostRequestData(data, url) {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/${url}`, {
@@ -15,13 +16,22 @@ export async function PostRequestData(data, url) {
   return res.json();
 }
 
-export async function GetRequestData(url) {
+export async function GetRequestData(url, isAuthenticated = false) {
+  const headers = {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+  };
+
+  if (isAuthenticated) {
+    const token = Cookies.get("token");
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+  }
+
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/${url}`, {
     method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      "Access-Control-Allow-Origin": "*",
-    },
+    headers,
   });
 
   if (!res.ok) {
