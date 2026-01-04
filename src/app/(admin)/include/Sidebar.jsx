@@ -102,6 +102,17 @@ function Sidebar() {
               </Link>
             </li>
 
+            <li className="nav-item">
+              <Link
+                className={`nav-link ${pathname === "/languages" ? "active" : ""}`}
+                href="/languages"
+              >
+                <div className="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+                  <MdCurrencyExchange size={16} />
+                </div>
+                <span className="nav-link-text ms-1">Language</span>
+              </Link>
+            </li>
             {/* <li className="nav-item">
               <Link
                 className={`nav-link ${
