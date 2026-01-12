@@ -2,10 +2,10 @@
 import DeleteButton from "@/Components/Button/DeleteButton";
 import NoDataFound from "@/Components/NoDataFound/NoDataFound";
 import { toBase64 } from "@/Helper/Hepler";
-import { GetRequestData, PostRequestData } from "@/Helper/HttpRequestHelper";
+import { GetRequestData, PostRequestData, UpdateRequestData } from "@/Helper/HttpRequestHelper";
 import { Pagination, TextField } from "@mui/material";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Modal } from "react-bootstrap";
 import { MdEditSquare } from "react-icons/md";
 import Swal from "sweetalert2";
@@ -27,13 +27,39 @@ function Page() {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const fetchCurrencies = () => {
+  const fetchCurrencies = useCallback(() => {
     GetRequestData(`api/v1/currency?page=${currentPage}&limit=10`, false).then(
       (data) => {
         console.log(data);
         setCurrencies(data);
       }
     );
+  }, [currentPage, searchTerm]);
+
+  const handleToggleStatus = async (id, currentStatus) => {
+    try {
+      const response = await UpdateRequestData(
+        { status: !currentStatus },
+        `api/v1/currency/${id}/status`
+      );
+
+      if (response) {
+        Swal.fire({
+          icon: "success",
+          title: "Success",
+          text: "Status updated successfully",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+        fetchCurrencies();
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Failed to update status",
+      });
+    }
   };
 
   const handlePageChange = (event, value) => {
@@ -42,7 +68,7 @@ function Page() {
 
   useEffect(() => {
     fetchCurrencies();
-  }, [currentPage, searchTerm]);
+  }, [fetchCurrencies]);
   return (
     <>
       <div className="row">
@@ -126,15 +152,23 @@ function Page() {
                             </span>
                           </td>
                           <td>
-                            <span
-                              className={`badge currency.status ${
-                                currency?.status
-                                  ? "bg-gradient-success"
-                                  : "bg-gradient-danger"
-                              } text-xs font-weight-bold`}
-                            >
-                              {currency?.status ? "Active" : "Inactive"}
-                            </span>
+                            <div className="form-check form-switch">
+                              <input
+                                className="form-check-input"
+                                type="checkbox"
+                                checked={currency?.status}
+                                onChange={() =>
+                                  handleToggleStatus(
+                                    currency._id,
+                                    currency?.status
+                                  )
+                                }
+                                style={{ cursor: "pointer" }}
+                              />
+                              <label className="form-check-label text-xs font-weight-bold">
+                                {currency?.status ? "Active" : "Inactive"}
+                              </label>
+                            </div>
                           </td>
                           <td className="d-flex">
                             <Link
