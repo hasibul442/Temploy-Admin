@@ -16,7 +16,7 @@ function Page() {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
-  const [currencies, setCurrencies] = useState([]);
+  const [language, setLanguage] = useState([]);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [iconUrl, setIconUrl] = useState("");
@@ -27,11 +27,10 @@ function Page() {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const fetchCurrencies = () => {
+  const fetchlanguage = () => {
     GetRequestData(`api/v1/languages?page=${currentPage}&limit=10`, false).then(
       (data) => {
-        console.log(data);
-        setCurrencies(data);
+        setLanguage(data);
       }
     );
   };
@@ -51,7 +50,7 @@ function Page() {
           showConfirmButton: false,
           timer: 1500,
         });
-        fetchCurrencies();
+        fetchlanguage();
       }
     } catch (error) {
       Swal.fire({
@@ -67,7 +66,7 @@ function Page() {
   };
 
   useEffect(() => {
-    fetchCurrencies();
+    fetchlanguage();
   }, [currentPage, searchTerm]);
   return (
     <>
@@ -129,8 +128,8 @@ function Page() {
                     </tr>
                   </thead>
                   <tbody>
-                    {currencies?.data?.length > 0 ? (
-                      currencies?.data.map((language, index) => (
+                    {language?.data?.length > 0 ? (
+                      language?.data.map((language, index) => (
                         <tr key={index}>
                           <td className="text-center">
                             <span className="text-secondary text-xs font-weight-bold">
@@ -193,16 +192,16 @@ function Page() {
                 </table>
               </div>
 
-              {/* <div className="text-center">
+              <div className="d-flex justify-content-center mt-4 mb-4">
                 <Pagination
                   color="primary"
-                  count={categories?.pagination?.totalPages}
+                  count={language?.pagination?.totalPages}
                   showFirstButton
                   showLastButton
                   page={currentPage}
                   onChange={handlePageChange}
                 />
-              </div> */}
+              </div>
             </div>
           </div>
         </div>
