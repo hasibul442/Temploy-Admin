@@ -77,6 +77,8 @@ export async function UpdateRequestData(data, url) {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
+      'Access-Control-Allow-Origin': '*',
+      "Authorization": `Bearer ${Cookies.get("token")}`,
     },
     body: JSON.stringify(data),
   });

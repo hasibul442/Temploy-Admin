@@ -2,7 +2,7 @@
 import DeleteButton from "@/Components/Button/DeleteButton";
 import NoDataFound from "@/Components/NoDataFound/NoDataFound";
 import { toBase64 } from "@/Helper/Hepler";
-import { GetRequestData, PostRequestData } from "@/Helper/HttpRequestHelper";
+import { GetRequestData, PostRequestData, UpdateRequestData } from "@/Helper/HttpRequestHelper";
 import { Pagination, TextField } from "@mui/material";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
@@ -34,6 +34,32 @@ function Page() {
         setCurrencies(data);
       }
     );
+  };
+
+  const handleToggleStatus = async (id, currentStatus) => {
+    try {
+      const response = await UpdateRequestData(
+        { status: !currentStatus },
+        `api/v1/languages/${id}/status`
+      );
+
+      if (response) {
+        Swal.fire({
+          icon: "success",
+          title: "Success",
+          text: "Status updated successfully",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+        fetchCurrencies();
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Failed to update status",
+      });
+    }
   };
 
   const handlePageChange = (event, value) => {
@@ -84,7 +110,7 @@ function Page() {
                       <th className="text-center text-secondary text-xxs font-weight-bolder opacity-7">
                         #
                       </th>
-                      
+
                       <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                         Name
                       </th>
@@ -127,15 +153,23 @@ function Page() {
                             </span>
                           </td>
                           <td>
-                            <span
-                              className={`badge language.status ${
-                                language?.status
-                                  ? "bg-gradient-success"
-                                  : "bg-gradient-danger"
-                              } text-xs font-weight-bold`}
-                            >
-                              {language?.status ? "Active" : "Inactive"}
-                            </span>
+                            <div className="form-check form-switch">
+                              <input
+                                className="form-check-input"
+                                type="checkbox"
+                                checked={language?.status}
+                                onChange={() =>
+                                  handleToggleStatus(
+                                    language._id,
+                                    language?.status
+                                  )
+                                }
+                                style={{ cursor: "pointer" }}
+                              />
+                              <label className="form-check-label text-xs font-weight-bold">
+                                {language?.status ? "Active" : "Inactive"}
+                              </label>
+                            </div>
                           </td>
                           <td className="d-flex">
                             <Link
