@@ -195,7 +195,7 @@ function Page() {
               <div className="d-flex justify-content-center mt-4 mb-4">
                 <Pagination
                   color="primary"
-                  count={language?.pagination?.total}
+                  count={language?.pagination?.total_pages}
                   showFirstButton
                   showLastButton
                   page={currentPage}
