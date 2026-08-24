@@ -159,7 +159,7 @@ function Page() {
                                 checked={language?.status}
                                 onChange={() =>
                                   handleToggleStatus(
-                                    language._id,
+                                    language.id,
                                     language?.status
                                   )
                                 }
@@ -173,12 +173,12 @@ function Page() {
                           <td className="d-flex">
                             <Link
                               className="btn btn-outline-info btn-sm p-2 mx-1"
-                              href={`/categories/${language._id}`}
+                              href={`/categories/${language.id}`}
                             >
                               <MdEditSquare size={16} />
                             </Link>
                             <DeleteButton
-                              id={language._id}
+                              id={language.id}
                               service="language"
                               deleteUrl="api/v1/languages"
                             />
@@ -195,7 +195,7 @@ function Page() {
               <div className="d-flex justify-content-center mt-4 mb-4">
                 <Pagination
                   color="primary"
-                  count={language?.pagination?.totalPages}
+                  count={language?.pagination?.total}
                   showFirstButton
                   showLastButton
                   page={currentPage}
