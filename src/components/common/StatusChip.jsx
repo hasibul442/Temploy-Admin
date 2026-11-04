@@ -1,14 +1,43 @@
 import { Chip } from "@mui/material";
 
+/** Maps every status label used across the admin to a palette tone. */
 const TONES = {
+  // positive / finished
   Completed: "success",
   Active: "success",
+  Approved: "success",
+  Paid: "success",
+  Resolved: "success",
+  Open: "info",
+  Published: "success",
+  // in flight
   Delivered: "info",
   "In progress": "primary",
+  "Under review": "info",
+  Processing: "info",
+  Hiring: "info",
+  // needs attention
   Pending: "warning",
+  "Pending approval": "warning",
+  "Pending review": "warning",
+  Paused: "warning",
+  Escalated: "warning",
+  High: "error",
+  Medium: "warning",
+  Low: "default",
+  // negative
   Disputed: "error",
   Suspended: "error",
+  Rejected: "error",
+  Failed: "error",
+  Refunded: "error",
+  // neutral
   Cancelled: "default",
+  Closed: "default",
+  Dismissed: "default",
+  Inactive: "default",
+  Draft: "default",
+  Expired: "default",
 };
 
 /** Status is always shown as a text label + tone, never color alone. */

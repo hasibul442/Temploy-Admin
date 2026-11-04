@@ -5,7 +5,6 @@ import Cookies from "js-cookie";
 import {
   Box,
   IconButton,
-  InputBase,
   Tooltip,
   Badge,
   Avatar,
@@ -15,7 +14,7 @@ import {
   Divider,
   Typography,
 } from "@mui/material";
-import { LuMenu, LuSearch, LuBell, LuLogOut, LuUser, LuSettings } from "react-icons/lu";
+import { LuMenu, LuBell, LuLogOut, LuUser, LuSettings } from "react-icons/lu";
 import { clay } from "@/theme/clay";
 
 /** Raised white clay square for the topbar's icon buttons; pushes in when pressed. */
@@ -59,31 +58,6 @@ export default function Topbar({ onMenuClick }) {
       <IconButton onClick={onMenuClick} aria-label="Toggle sidebar" sx={clayButtonSx}>
         <LuMenu size={20} />
       </IconButton>
-
-      {/* Clay: search is a pressed-in well */}
-      <Box
-        sx={{
-          display: { xs: "none", sm: "flex" },
-          alignItems: "center",
-          gap: 1,
-          px: 1.75,
-          height: 42,
-          width: { sm: 260, md: 340 },
-          borderRadius: "14px",
-          bgcolor: "background.default",
-          boxShadow: clay.pressed,
-          border: "1.5px solid transparent",
-          color: "text.secondary",
-          transition: "border-color .15s",
-          "&:focus-within": { borderColor: "primary.main" },
-        }}
-      >
-        <LuSearch size={16} />
-        <InputBase placeholder="Search users, orders, gigs…" sx={{ flex: 1, fontSize: 14 }} inputProps={{ "aria-label": "Search" }} />
-        <Typography variant="caption" sx={{ bgcolor: "background.paper", boxShadow: clay.raised, borderRadius: "6px", px: 0.75, color: "text.secondary" }}>
-          ⌘K
-        </Typography>
-      </Box>
 
       <Box sx={{ flex: 1 }} />
 

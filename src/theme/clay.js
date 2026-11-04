@@ -10,7 +10,7 @@ export const clay = {
   /** rgb triplet for one-off shadows that should match the clay shading. */
   ink,
   /** Page background: warm cream so white clay surfaces stand out. */
-  bg: "#F5F0E6",
+  bg: "#e3f2fd95",
   /** Warm white for cards and raised surfaces. */
   paper: "#fffdf9",
   /** Large surfaces: cards, menus, dialogs. */
