@@ -31,7 +31,8 @@ export default function AreaChart({ data, xKey, yKey, height = 280, formatValue 
   const line = data.map((d, i) => `${i ? "L" : "M"}${x(i)},${y(d[yKey])}`).join("");
   const area = `${line}L${x(data.length - 1)},${h}L0,${h}Z`;
   const color = theme.vars.palette.chart.series1;
-  const showEvery = w < 420 ? 2 : 1;
+  // Thin x-axis labels so each gets ~64px (30 daily points would otherwise overlap).
+  const showEvery = Math.max(1, Math.ceil(data.length / Math.max(1, Math.floor(w / 64))));
 
   const onMove = (e) => {
     const rect = e.currentTarget.getBoundingClientRect();

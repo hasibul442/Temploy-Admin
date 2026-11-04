@@ -81,6 +81,7 @@ export const NAV_SECTIONS = [
         icon: LuLanguages,
         children: [
           { label: "Currencies", href: "/currencies" },
+          { label: "Countries", href: "/countries" },
           { label: "Languages", href: "/languages" },
         ],
       },

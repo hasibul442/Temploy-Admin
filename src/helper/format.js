@@ -10,6 +10,7 @@ const usdCompact = new Intl.NumberFormat("en-US", {
 
 /** 1,284 / 12.9K / $4.2M style auto-compaction for stat values. */
 export function formatStat(value, format) {
+  if (format === "percent") return `${value.toFixed(1)}%`;
   if (format === "currency") return value >= 10000 ? usdCompact.format(value) : usd.format(value);
   return value >= 10000 ? compact.format(value) : whole.format(value);
 }
