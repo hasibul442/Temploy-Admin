@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { Box, Typography } from "@mui/material";
+import { clay } from "@/theme/clay";
 
 /**
  * Horizontal ranked bars (single series): label above, thin bar, value at the end.
@@ -31,16 +32,18 @@ export default function BarList({ data, labelKey, valueKey, formatValue = (v) =>
               </Box>
             </Typography>
           </Box>
-          <Box sx={(theme) => ({ height: 8, borderRadius: 4, bgcolor: theme.vars.palette.chart.grid, overflow: "hidden" })}>
+          {/* Clay: pressed-in track holding a puffy bar */}
+          <Box sx={(theme) => ({ height: 12, borderRadius: 999, bgcolor: theme.vars.palette.chart.grid, boxShadow: clay.pressed, overflow: "hidden" })}>
             <Box
-              sx={(theme) => ({
+              sx={{
                 height: "100%",
                 width: `${(d[valueKey] / max) * 100}%`,
-                bgcolor: theme.vars.palette.chart.series1,
-                borderRadius: 4,
+                backgroundImage: "linear-gradient(180deg, #4caf50 0%, #2e7d32 100%)",
+                boxShadow: "inset 0 2px 3px rgba(255,255,255,0.45), inset 0 -2px 3px rgba(0,0,0,0.15)",
+                borderRadius: 999,
                 opacity: hover === null || hover === i ? 1 : 0.45,
                 transition: "opacity .15s",
-              })}
+              }}
             />
           </Box>
         </Box>

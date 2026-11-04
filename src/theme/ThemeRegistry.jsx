@@ -5,7 +5,7 @@ import theme from "./theme";
 
 export default function ThemeRegistry({ children }) {
   return (
-    <ThemeProvider theme={theme} defaultMode="system">
+    <ThemeProvider theme={theme}>
       <CssBaseline enableColorScheme />
       {children}
     </ThemeProvider>

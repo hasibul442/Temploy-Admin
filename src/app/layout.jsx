@@ -1,11 +1,12 @@
-import { Inter } from "next/font/google";
+import { Poppins, Roboto } from "next/font/google";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
-import InitColorSchemeScript from "@mui/material/InitColorSchemeScript";
 import { ToastContainer } from "react-toastify";
 import ThemeRegistry from "@/theme/ThemeRegistry";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"], display: "swap", variable: "--font-inter" });
+// Headings: Poppins (not a variable font, so weights are listed). Body: Roboto (variable).
+const display = Poppins({ subsets: ["latin"], weight: ["500", "600", "700", "800"], display: "swap", variable: "--font-display" });
+const body = Roboto({ subsets: ["latin"], display: "swap", variable: "--font-body" });
 
 export const metadata = {
   title: "Temploy Admin",
@@ -14,9 +15,8 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={inter.variable} suppressHydrationWarning>
+    <html lang="en" className={`${display.variable} ${body.variable}`}>
       <body>
-        <InitColorSchemeScript attribute="class" defaultMode="system" />
         <AppRouterCacheProvider options={{ enableCssLayer: true }}>
           <ThemeRegistry>
             {children}

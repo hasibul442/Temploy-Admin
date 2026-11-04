@@ -15,22 +15,19 @@ import {
   Divider,
   Typography,
 } from "@mui/material";
-import { useColorScheme } from "@mui/material/styles";
-import { LuMenu, LuSearch, LuBell, LuMoon, LuSun, LuMonitor, LuLogOut, LuUser, LuSettings } from "react-icons/lu";
+import { LuMenu, LuSearch, LuBell, LuLogOut, LuUser, LuSettings } from "react-icons/lu";
+import { clay } from "@/theme/clay";
 
-function ThemeToggle() {
-  const { mode, setMode } = useColorScheme();
-  if (!mode) return <Box sx={{ width: 40 }} />;
-  const next = { light: "dark", dark: "system", system: "light" }[mode];
-  const Icon = { light: LuSun, dark: LuMoon, system: LuMonitor }[mode];
-  return (
-    <Tooltip title={`Theme: ${mode} (switch to ${next})`}>
-      <IconButton onClick={() => setMode(next)} aria-label="Toggle color theme">
-        <Icon size={18} />
-      </IconButton>
-    </Tooltip>
-  );
-}
+/** Raised white clay square for the topbar's icon buttons; pushes in when pressed. */
+const clayButtonSx = {
+  width: 42,
+  height: 42,
+  borderRadius: "14px",
+  bgcolor: "background.paper",
+  boxShadow: clay.raised,
+  "&:hover": { bgcolor: "#ffffff" },
+  "&:active": { boxShadow: clay.pressed },
+};
 
 export default function Topbar({ onMenuClick }) {
   const router = useRouter();
@@ -48,49 +45,50 @@ export default function Topbar({ onMenuClick }) {
         position: "sticky",
         top: 0,
         zIndex: theme.zIndex.appBar,
-        height: 64,
+        height: 72,
         display: "flex",
         alignItems: "center",
-        gap: 1,
+        gap: 1.5,
         px: { xs: 2, md: 3 },
-        bgcolor: `rgba(${theme.vars.palette.background.defaultChannel} / 0.85)`,
+        // White bar over the cream page, separated by a soft shadow.
+        bgcolor: "rgba(255, 255, 255, 0.92)",
         backdropFilter: "blur(8px)",
-        borderBottom: 1,
-        borderColor: "divider",
+        boxShadow: `0 6px 20px rgba(${clay.ink}, 0.08)`,
       })}
     >
-      <IconButton onClick={onMenuClick} aria-label="Toggle sidebar" edge="start">
+      <IconButton onClick={onMenuClick} aria-label="Toggle sidebar" sx={clayButtonSx}>
         <LuMenu size={20} />
       </IconButton>
 
+      {/* Clay: search is a pressed-in well */}
       <Box
         sx={{
           display: { xs: "none", sm: "flex" },
           alignItems: "center",
           gap: 1,
-          px: 1.5,
-          height: 38,
+          px: 1.75,
+          height: 42,
           width: { sm: 260, md: 340 },
-          borderRadius: "8px",
-          bgcolor: "background.paper",
-          border: 1,
-          borderColor: "divider",
+          borderRadius: "14px",
+          bgcolor: "background.default",
+          boxShadow: clay.pressed,
+          border: "1.5px solid transparent",
           color: "text.secondary",
+          transition: "border-color .15s",
           "&:focus-within": { borderColor: "primary.main" },
         }}
       >
         <LuSearch size={16} />
         <InputBase placeholder="Search users, orders, gigs…" sx={{ flex: 1, fontSize: 14 }} inputProps={{ "aria-label": "Search" }} />
-        <Typography variant="caption" sx={{ border: 1, borderColor: "divider", borderRadius: "4px", px: 0.75, color: "text.disabled" }}>
+        <Typography variant="caption" sx={{ bgcolor: "background.paper", boxShadow: clay.raised, borderRadius: "6px", px: 0.75, color: "text.secondary" }}>
           ⌘K
         </Typography>
       </Box>
 
       <Box sx={{ flex: 1 }} />
 
-      <ThemeToggle />
       <Tooltip title="Notifications">
-        <IconButton aria-label="Notifications">
+        <IconButton aria-label="Notifications" sx={clayButtonSx}>
           <Badge color="error" variant="dot" overlap="circular">
             <LuBell size={18} />
           </Badge>
@@ -130,7 +128,7 @@ export default function Topbar({ onMenuClick }) {
         onClose={() => setAnchor(null)}
         anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
         transformOrigin={{ vertical: "top", horizontal: "right" }}
-        slotProps={{ paper: { sx: { mt: 1, minWidth: 200, border: 1, borderColor: "divider" } } }}
+        slotProps={{ paper: { sx: { mt: 1, minWidth: 200 } } }}
       >
         <MenuItem onClick={() => setAnchor(null)}>
           <ListItemIcon><LuUser size={16} /></ListItemIcon>Profile

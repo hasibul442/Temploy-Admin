@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { Box, Typography, Chip, Collapse } from "@mui/material";
 import { LuChevronRight } from "react-icons/lu";
 import { NAV_SECTIONS, findNavItem } from "@/config/navigation";
+import { clay, clayRgb } from "@/theme/clay";
 
 export const SIDEBAR_WIDTH = 260;
 
@@ -15,8 +16,9 @@ function Brand() {
         sx={{
           width: 34,
           height: 34,
-          borderRadius: "10px",
-          bgcolor: "primary.main",
+          borderRadius: "12px",
+          backgroundImage: "linear-gradient(145deg, #43a047 0%, #2e7d32 55%, #1b5e20 100%)",
+          boxShadow: clay.tinted(clayRgb.primary),
           color: "primary.contrastText",
           display: "grid",
           placeItems: "center",
@@ -38,15 +40,16 @@ function Brand() {
 }
 
 /** Shared look for top-level links and group toggles. */
+// Clay: the active item is a raised light-green pill; hovering tints a row cream.
 const rowSx = (active) => (theme) => ({
   display: "flex",
   alignItems: "center",
   gap: 1.5,
   width: "100%",
-  height: 40,
+  height: 42,
   px: 1.5,
   border: 0,
-  borderRadius: "8px",
+  borderRadius: "14px",
   font: "inherit",
   fontSize: 14,
   fontWeight: active ? 600 : 500,
@@ -54,16 +57,19 @@ const rowSx = (active) => (theme) => ({
   cursor: "pointer",
   color: active ? theme.vars.palette.primary.main : theme.vars.palette.text.secondary,
   bgcolor: active ? theme.vars.palette.primary.light : "transparent",
-  transition: "background-color .15s, color .15s",
+  boxShadow: active ? clay.raised : "none",
+  transition: "background-color .15s, color .15s, box-shadow .15s",
   "&:hover": {
-    bgcolor: active ? theme.vars.palette.primary.light : theme.vars.palette.action.hover,
+    bgcolor: active ? theme.vars.palette.primary.light : theme.vars.palette.background.default,
     color: active ? theme.vars.palette.primary.main : theme.vars.palette.text.primary,
   },
   "&:focus-visible": { outline: `2px solid ${theme.vars.palette.primary.main}`, outlineOffset: 2 },
 });
 
 function Badge({ value }) {
-  return value ? <Chip label={value} size="small" sx={{ height: 20, fontSize: 11, bgcolor: "action.selected" }} /> : null;
+  return value ? (
+    <Chip label={value} size="small" sx={{ height: 20, minWidth: 26, fontSize: 11, bgcolor: "background.paper", boxShadow: clay.raised }} />
+  ) : null;
 }
 
 function NavLink({ item, active, onNavigate }) {
@@ -169,13 +175,14 @@ export default function Sidebar({ onNavigate }) {
         display: "flex",
         flexDirection: "column",
         px: 1.5,
-        bgcolor: "background.paper",
-        borderRight: 1,
-        borderColor: "divider",
+        // White panel over the cream page; a soft shadow separates it instead of a hard border.
+        bgcolor: "#ffffff",
+        boxShadow: `6px 0 24px rgba(${clay.ink}, 0.10)`,
       }}
     >
       <Brand />
-      <Box sx={{ flex: 1, overflowY: "auto", pb: 2, mx: -0.5, px: 0.5 }}>
+      {/* Extra horizontal padding so the raised pills' shadows aren't clipped by the scroller. */}
+      <Box sx={{ flex: 1, overflowY: "auto", pb: 2, mx: -1.5, px: 1.5 }}>
         {NAV_SECTIONS.map((section) => (
           <Box key={section.title} sx={{ mt: 2 }}>
             <Typography variant="overline" component="div" color="text.disabled" sx={{ px: 1.5, mb: 0.5 }}>

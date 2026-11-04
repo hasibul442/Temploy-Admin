@@ -23,6 +23,10 @@ import AreaChart from "@/components/charts/AreaChart";
 import BarList from "@/components/charts/BarList";
 import { formatCurrency, formatNumber, formatDate, initials } from "@/helper/format";
 import { revenueSeries, ordersByCategory, userSplit, recentOrders, topFreelancers, pendingActions } from "@/data/mock";
+import { clay, clayRgb } from "@/theme/clay";
+
+/** Small puffy highlight for colored dots and bar segments. */
+const PUFF = "inset 0 2px 3px rgba(255,255,255,0.45), inset 0 -2px 3px rgba(0,0,0,0.15)";
 
 const METRICS = {
   gmv: { label: "Gross volume", sub: "Total value of orders placed, monthly" },
@@ -44,7 +48,7 @@ export function RevenueCard() {
           value={metric}
           onChange={(_, v) => v && setMetric(v)}
           aria-label="Revenue metric"
-          sx={{ "& .MuiToggleButton-root": { px: 1.5, py: 0.5, fontSize: 12.5, textTransform: "none" } }}
+          sx={{ "& .MuiToggleButton-root": { px: 1.5, py: 0.6, fontSize: 12.5, textTransform: "none" } }}
         >
           <ToggleButton value="gmv">Gross volume</ToggleButton>
           <ToggleButton value="fees">Fees</ToggleButton>
@@ -81,14 +85,18 @@ export function UserSplitCard() {
   return (
     <SectionCard title="Registered users" subtitle="All time">
       <Typography sx={{ fontSize: 30, fontWeight: 600, letterSpacing: "-0.02em" }}>{formatNumber(total)}</Typography>
-      <Box sx={{ display: "flex", gap: "2px", height: 8, my: 2 }} role="img" aria-label={`Freelancers ${userSplit.freelancers}, clients ${userSplit.clients}`}>
+      <Box
+        sx={{ display: "flex", gap: "4px", height: 16, my: 2, p: "3px", borderRadius: 999, bgcolor: "background.default", boxShadow: clay.pressed }}
+        role="img"
+        aria-label={`Freelancers ${userSplit.freelancers}, clients ${userSplit.clients}`}
+      >
         {parts.map((p) => (
-          <Box key={p.label} sx={(t) => ({ flex: p.value, bgcolor: t.vars.palette.chart[p.color], borderRadius: 4 })} />
+          <Box key={p.label} sx={(t) => ({ flex: p.value, bgcolor: t.vars.palette.chart[p.color], borderRadius: 999, boxShadow: PUFF })} />
         ))}
       </Box>
       {parts.map((p) => (
         <Box key={p.label} sx={{ display: "flex", alignItems: "center", gap: 1, py: 0.5, fontSize: 13 }}>
-          <Box sx={(t) => ({ width: 10, height: 10, borderRadius: "3px", bgcolor: t.vars.palette.chart[p.color] })} />
+          <Box sx={(t) => ({ width: 12, height: 12, borderRadius: "4px", bgcolor: t.vars.palette.chart[p.color], boxShadow: PUFF })} />
           <Typography sx={{ fontSize: 13, flex: 1 }}>{p.label}</Typography>
           <Typography className="num" sx={{ fontSize: 13, fontWeight: 600 }}>
             {formatNumber(p.value)}
@@ -118,12 +126,13 @@ export function PendingActionsCard() {
                 gap: 1.5,
                 px: 1.25,
                 py: 1.1,
-                borderRadius: "8px",
-                "&:hover": { bgcolor: "action.hover" },
+                borderRadius: "14px",
+                transition: "background-color .15s, box-shadow .15s",
+                "&:hover": { bgcolor: "background.paper", boxShadow: clay.raised },
                 "&:hover .arrow": { opacity: 1, transform: "translateX(0)" },
               }}
             >
-              <Box sx={{ width: 8, height: 8, borderRadius: "50%", bgcolor: toneColor[a.tone], flexShrink: 0 }} />
+              <Box sx={{ width: 10, height: 10, borderRadius: "50%", bgcolor: toneColor[a.tone], boxShadow: PUFF, flexShrink: 0 }} />
               <Typography sx={{ fontSize: 13.5, flex: 1 }}>{a.label}</Typography>
               <Typography className="num" sx={{ fontSize: 13.5, fontWeight: 600 }}>
                 {a.count}
@@ -145,6 +154,8 @@ export function RecentOrdersCard() {
       title="Recent orders"
       subtitle="Latest activity across the marketplace"
       noPadding
+      // Not inside a grid row, so don't stretch to the parent's height.
+      sx={{ height: "auto" }}
       action={
         <Button component={Link} href="/orders" size="small" endIcon={<LuArrowRight size={14} />}>
           View all
@@ -194,7 +205,9 @@ export function TopFreelancersCard() {
       <Box sx={{ px: 2.5, pb: 2, display: "flex", flexDirection: "column", gap: 2 }}>
         {topFreelancers.map((f) => (
           <Box key={f.name} sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-            <Avatar sx={{ width: 38, height: 38, fontSize: 13, bgcolor: "primary.light", color: "primary.main", fontWeight: 600 }}>
+            <Avatar
+              sx={{ width: 40, height: 40, fontSize: 13, borderRadius: "14px", bgcolor: "primary.light", color: "primary.main", fontWeight: 600, boxShadow: clay.tinted(clayRgb.primary, 0.2) }}
+            >
               {initials(f.name)}
             </Avatar>
             <Box sx={{ flex: 1, minWidth: 0 }}>

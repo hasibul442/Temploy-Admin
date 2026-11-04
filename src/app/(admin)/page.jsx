@@ -1,5 +1,5 @@
 import { Box, Button } from "@mui/material";
-import { LuDownload } from "react-icons/lu";
+import { LuDownload, LuWallet, LuShoppingBag, LuUserPlus, LuScale } from "react-icons/lu";
 import PageHeader from "@/components/common/PageHeader";
 import StatCard from "@/components/dashboard/StatCard";
 import {
@@ -14,7 +14,19 @@ import { kpis } from "@/data/mock";
 
 export const metadata = { title: "Dashboard · Temploy Admin" };
 
-const grid = (cols) => ({ display: "grid", gap: { xs: 2, md: 2.5 }, gridTemplateColumns: cols });
+/**
+ * Icon + clay color for each KPI card (presentation only, so it lives here, not in the data).
+ * Icons are passed as rendered elements: this is a Server Component and StatCard is a
+ * Client Component, so component functions can't cross that boundary but elements can.
+ */
+const KPI_STYLE = {
+  revenue: { icon: <LuWallet size={21} />, tone: "primary" },
+  orders: { icon: <LuShoppingBag size={21} />, tone: "info" },
+  users: { icon: <LuUserPlus size={21} />, tone: "warning" },
+  disputes: { icon: <LuScale size={21} />, tone: "error" },
+};
+
+const grid =(cols) => ({ display: "grid", gap: { xs: 2, md: 2.5 }, gridTemplateColumns: cols });
 
 export default function DashboardPage() {
   return (
@@ -23,7 +35,7 @@ export default function DashboardPage() {
         title="Good morning, Hasibul"
         subtitle="Here's what's happening on Temploy today."
         actions={
-          <Button variant="outlined" color="inherit" startIcon={<LuDownload size={16} />} sx={{ borderColor: "divider" }}>
+          <Button variant="outlined" color="inherit" startIcon={<LuDownload size={16} />}>
             Export report
           </Button>
         }
@@ -31,7 +43,7 @@ export default function DashboardPage() {
 
       <Box sx={{ ...grid({ xs: "1fr", sm: "repeat(2, 1fr)", xl: "repeat(4, 1fr)" }), mb: 2.5 }}>
         {kpis.map(({ key, ...kpi }) => (
-          <StatCard key={key} {...kpi} />
+          <StatCard key={key} {...kpi} {...KPI_STYLE[key]} />
         ))}
       </Box>
 

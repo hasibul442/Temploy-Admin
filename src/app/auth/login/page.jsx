@@ -38,7 +38,7 @@ export default function LoginPage() {
           justifyContent: "space-between",
           p: 6,
           color: "#fff",
-          background: "radial-gradient(1200px 600px at 0% 0%, #6366f1 0%, #3730a3 45%, #1e1b4b 100%)",
+          background: "radial-gradient(1200px 600px at 0% 0%, #37913c 0%, #235c31 40%, #173a21 70%, #0f2716 100%)",
           position: "relative",
           overflow: "hidden",
         }}
@@ -48,7 +48,7 @@ export default function LoginPage() {
           <Typography sx={{ fontWeight: 700, fontSize: 18 }}>Temploy</Typography>
         </Box>
         <Box sx={{ maxWidth: 440, position: "relative", zIndex: 1 }}>
-          <Typography sx={{ fontSize: 34, fontWeight: 700, lineHeight: 1.2, letterSpacing: "-0.02em" }}>
+          <Typography variant="h3" component="p" sx={{ fontSize: 34, lineHeight: 1.2 }}>
             Run the marketplace from one place.
           </Typography>
           <Typography sx={{ mt: 2, opacity: 0.8, fontSize: 15.5 }}>
