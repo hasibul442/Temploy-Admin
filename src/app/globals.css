@@ -1,0 +1,14 @@
+html,
+body {
+  height: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Tabular figures for aligned numeric columns */
+.num {
+  font-variant-numeric: tabular-nums;
+}

@@ -1,29 +1,16 @@
-import Link from "next/link";
-import style from "./not-found.module.css";
+import { Box, Button, Typography } from "@mui/material";
 
 export default function NotFound() {
   return (
-    <>
-      <section className={style.page_404}>
-        <div className="container">
-          <div className="row">
-            <div className="col-sm-12 ">
-              <div className="col-sm-12 col-sm-offset-1  text-center">
-                <div className={style.four_zero_four_bg}>
-                  <h1 className="text-center ">404</h1>
-                </div>
-                <div className={style.contant_box_404}>
-                  <h3 className="h2">Look like you're lost</h3>
-                  <p>the page you are looking for not avaible!</p>
-                  <Link href="/" className={style.link_404}>
-                    Go to Home
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    </>
+    <Box sx={{ minHeight: "100vh", display: "grid", placeItems: "center", p: 3, bgcolor: "background.default", textAlign: "center" }}>
+      <Box>
+        <Typography sx={{ fontSize: 72, fontWeight: 800, letterSpacing: "-0.04em", color: "primary.main", lineHeight: 1 }}>404</Typography>
+        <Typography variant="h5" sx={{ mt: 2 }}>Page not found</Typography>
+        <Typography color="text.secondary" sx={{ mt: 1, mb: 3 }}>
+          The page you&apos;re looking for doesn&apos;t exist or has moved.
+        </Typography>
+        <Button href="/" variant="contained">Back to dashboard</Button>
+      </Box>
+    </Box>
   );
 }
