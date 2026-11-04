@@ -6,24 +6,23 @@ import {
   LuPackage,
   LuShoppingBag,
   LuSparkles,
-  LuClipboardCheck,
   LuWallet,
   LuArrowDownToLine,
   LuFlag,
   LuScale,
   LuFolderTree,
-  LuFolders,
-  LuMedal,
-  LuCoins,
   LuLanguages,
-  LuRuler,
   LuShieldCheck,
   LuSettings,
 } from "react-icons/lu";
 
 /**
  * Single source of truth for the sidebar, breadcrumbs and placeholder pages.
- * `badge` values are mock counts until the API is wired up.
+ *
+ * An item is either a link ({ label, href, icon, badge? }) or a group
+ * ({ label, icon, children: [{ label, href, badge? }] }) that renders as a
+ * collapsible second-level menu. `badge` values are mock counts until the API
+ * is wired up; a group shows the sum of its children's badges.
  */
 export const NAV_SECTIONS = [
   {
@@ -40,8 +39,14 @@ export const NAV_SECTIONS = [
       { label: "Jobs", href: "/jobs", icon: LuBriefcase, badge: 12 },
       { label: "Offers", href: "/offers", icon: LuPackage },
       { label: "Orders", href: "/orders", icon: LuShoppingBag },
-      { label: "Skills", href: "/skills", icon: LuSparkles },
-      { label: "Skill tests", href: "/test", icon: LuClipboardCheck },
+      {
+        label: "Skills",
+        icon: LuSparkles,
+        children: [
+          { label: "All skills", href: "/skills" },
+          { label: "Skill tests", href: "/test" },
+        ],
+      },
     ],
   },
   {
@@ -61,20 +66,37 @@ export const NAV_SECTIONS = [
   {
     title: "Settings",
     items: [
-      { label: "Categories", href: "/categories", icon: LuFolderTree },
-      { label: "Subcategories", href: "/subcategories", icon: LuFolders },
-      { label: "Levels", href: "/levels", icon: LuMedal },
-      { label: "Currencies", href: "/currencies", icon: LuCoins },
-      { label: "Languages", href: "/languages", icon: LuLanguages },
-      { label: "Units", href: "/unit", icon: LuRuler },
+      {
+        label: "Catalog",
+        icon: LuFolderTree,
+        children: [
+          { label: "Categories", href: "/categories" },
+          { label: "Subcategories", href: "/subcategories" },
+          { label: "Levels", href: "/levels" },
+          { label: "Units", href: "/unit" },
+        ],
+      },
+      {
+        label: "Localization",
+        icon: LuLanguages,
+        children: [
+          { label: "Currencies", href: "/currencies" },
+          { label: "Languages", href: "/languages" },
+        ],
+      },
       { label: "Employees & roles", href: "/employees", icon: LuShieldCheck },
       { label: "System settings", href: "/settings", icon: LuSettings },
     ],
   },
 ];
 
+/** Every linkable page (groups flattened to their children). */
 export const NAV_ITEMS = NAV_SECTIONS.flatMap((s) =>
-  s.items.map((i) => ({ ...i, section: s.title }))
+  s.items.flatMap((i) =>
+    i.children
+      ? i.children.map((c) => ({ ...c, icon: c.icon ?? i.icon, parent: i.label, section: s.title }))
+      : [{ ...i, section: s.title }]
+  )
 );
 
 export function findNavItem(pathname) {

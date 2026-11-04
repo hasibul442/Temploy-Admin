@@ -1,7 +1,7 @@
 import { Box, Button } from "@mui/material";
 import { LuDownload } from "react-icons/lu";
-import PageHeader from "@/Components/common/PageHeader";
-import StatCard from "@/Components/dashboard/StatCard";
+import PageHeader from "@/components/common/PageHeader";
+import StatCard from "@/components/dashboard/StatCard";
 import {
   RevenueCard,
   CategoryCard,
@@ -9,7 +9,7 @@ import {
   PendingActionsCard,
   RecentOrdersCard,
   TopFreelancersCard,
-} from "@/Components/dashboard/DashboardCards";
+} from "@/components/dashboard/DashboardCards";
 import { kpis } from "@/data/mock";
 
 export const metadata = { title: "Dashboard · Temploy Admin" };
@@ -30,8 +30,8 @@ export default function DashboardPage() {
       />
 
       <Box sx={{ ...grid({ xs: "1fr", sm: "repeat(2, 1fr)", xl: "repeat(4, 1fr)" }), mb: 2.5 }}>
-        {kpis.map((k) => (
-          <StatCard key={k.key} {...k} />
+        {kpis.map(({ key, ...kpi }) => (
+          <StatCard key={key} {...kpi} />
         ))}
       </Box>
 

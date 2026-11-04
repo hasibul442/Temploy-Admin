@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { Box, Button, Card, Typography } from "@mui/material";
 import { LuConstruction, LuArrowRight } from "react-icons/lu";
-import PageHeader from "@/Components/common/PageHeader";
+import PageHeader from "@/components/common/PageHeader";
 import { findNavItem } from "@/config/navigation";
 
 /**

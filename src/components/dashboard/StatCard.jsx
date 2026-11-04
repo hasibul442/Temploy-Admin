@@ -1,8 +1,8 @@
 "use client";
 import { Card, Box, Typography } from "@mui/material";
 import { LuTrendingUp, LuTrendingDown } from "react-icons/lu";
-import Sparkline from "@/Components/charts/Sparkline";
-import { formatStat } from "@/Helper/format";
+import Sparkline from "@/components/charts/Sparkline";
+import { formatStat } from "@/helper/format";
 
 export default function StatCard({ label, value, format, delta, upIsGood = true, trend, period = "vs last month" }) {
   const up = delta >= 0;

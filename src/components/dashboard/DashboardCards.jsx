@@ -17,11 +17,11 @@ import {
   Chip,
 } from "@mui/material";
 import { LuArrowRight, LuStar } from "react-icons/lu";
-import SectionCard from "@/Components/common/SectionCard";
-import StatusChip from "@/Components/common/StatusChip";
-import AreaChart from "@/Components/charts/AreaChart";
-import BarList from "@/Components/charts/BarList";
-import { formatCurrency, formatNumber, formatDate, initials } from "@/Helper/format";
+import SectionCard from "@/components/common/SectionCard";
+import StatusChip from "@/components/common/StatusChip";
+import AreaChart from "@/components/charts/AreaChart";
+import BarList from "@/components/charts/BarList";
+import { formatCurrency, formatNumber, formatDate, initials } from "@/helper/format";
 import { revenueSeries, ordersByCategory, userSplit, recentOrders, topFreelancers, pendingActions } from "@/data/mock";
 
 const METRICS = {

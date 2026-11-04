@@ -23,10 +23,10 @@ import {
   Checkbox,
 } from "@mui/material";
 import { LuSearch, LuPlus, LuDownload, LuEllipsisVertical, LuBadgeCheck } from "react-icons/lu";
-import PageHeader from "@/Components/common/PageHeader";
-import StatusChip from "@/Components/common/StatusChip";
+import PageHeader from "@/components/common/PageHeader";
+import StatusChip from "@/components/common/StatusChip";
 import { users } from "@/data/mock";
-import { formatCurrency, formatDate, initials } from "@/Helper/format";
+import { formatCurrency, formatDate, initials } from "@/helper/format";
 
 const TYPES = ["All", "Freelancer", "Client"];
 
