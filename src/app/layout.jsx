@@ -20,7 +20,7 @@ export default function RootLayout({ children }) {
         <AppRouterCacheProvider options={{ enableCssLayer: true }}>
           <ThemeRegistry>
             {children}
-            <ToastContainer position="bottom-right" theme="colored" />
+            <ToastContainer position="bottom-right" theme="light" />
           </ThemeRegistry>
         </AppRouterCacheProvider>
       </body>

@@ -259,7 +259,7 @@ export default function RolesPage() {
           </TableContainer>
           {role.locked && (
             <Typography sx={{ fontSize: 12.5, color: "text.secondary", px: 2.5, py: 2, display: "flex", alignItems: "center", gap: 0.75 }}>
-              <LuLock size={13} /> Super admin always has every permission and can't be changed.
+              <LuLock size={13} /> Super admin always has every permission and can&apos;t be changed.
             </Typography>
           )}
         </Card>
