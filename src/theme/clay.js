@@ -12,7 +12,7 @@ export const clay = {
   /** Page background: warm cream so white clay surfaces stand out. */
   bg: "#e3f2fd95",
   /** Warm white for cards and raised surfaces. */
-  paper: "#fffdf9",
+  paper: "#fff",
   /** Large surfaces: cards, menus, dialogs. */
   card: [
     `10px 12px 28px rgba(${ink}, 0.12)`,

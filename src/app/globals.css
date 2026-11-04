@@ -18,6 +18,13 @@
   }
 }
 
+/* Toasts use the app's body font and soft clay corners. */
+:root {
+  --toastify-font-family: var(--font-body), Roboto, system-ui, sans-serif;
+  --toastify-toast-bd-radius: 14px;
+  --toastify-text-color-light: #1d1d1f;
+}
+
 /* Tabular figures for aligned numeric columns */
 .num {
   font-variant-numeric: tabular-nums;
