@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import { LuMail, LuLock, LuEye, LuEyeOff, LuArrowRight, LuShieldCheck } from "react-icons/lu";
 import { toast } from "react-toastify";
-import { employeeLogin, verifyEmployeeLoginOtp } from "@/utils/services/api/ApiService";
+import { employeeLogin, verifyEmployeeLoginOtp } from "@/utils/services/api/AuthService";
 
 const DEVICE_KEY = "admin_device_id";
 
