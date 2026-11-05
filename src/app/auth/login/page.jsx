@@ -13,19 +13,87 @@ import {
   Typography,
   Link as MuiLink,
 } from "@mui/material";
-import { LuMail, LuLock, LuEye, LuEyeOff, LuArrowRight } from "react-icons/lu";
+import { LuMail, LuLock, LuEye, LuEyeOff, LuArrowRight, LuShieldCheck } from "react-icons/lu";
+import { toast } from "react-toastify";
+import { employeeLogin, verifyEmployeeLoginOtp } from "@/utils/services/api/ApiService";
+
+const DEVICE_KEY = "admin_device_id";
+
+// The server hands out a device_id after the first OTP on this browser; sending it back skips the OTP.
+function readDeviceId() {
+  try {
+    return localStorage.getItem(DEVICE_KEY);
+  } catch {
+    return null; // storage blocked (private mode): every sign-in asks for an OTP
+  }
+}
+
+function saveDeviceId(deviceId) {
+  try {
+    if (deviceId) localStorage.setItem(DEVICE_KEY, deviceId);
+  } catch {
+    // ignore: the next sign-in will just ask for an OTP again
+  }
+}
 
 export default function LoginPage() {
   const router = useRouter();
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  // Set when the API asks for an OTP: { otp_token, email_hint }, plus the credentials for "Resend code".
+  const [otpStep, setOtpStep] = useState(null);
 
-  // TODO(backend): replace with PostRequestData({ email, password }, "admin/login")
+  const fail = (res, fallback) => {
+    const message = res?.message || res?.data?.message || fallback;
+    setError(message);
+    toast.error(message);
+    setLoading(false);
+  };
+
+  const finish = (body, remember) => {
+    Cookies.set("token", body.token.token, { sameSite: "lax", ...(remember ? { expires: 30 } : {}) });
+    saveDeviceId(body.device_id);
+    toast.success(body.message || "Signed in");
+    router.replace("/");
+    router.refresh();
+  };
+
+  const signIn = async ({ email, password, remember }) => {
+    setError("");
+    setLoading(true);
+    const res = await employeeLogin({ email, password, device: { device_id: readDeviceId() } });
+    const body = res?.data;
+
+    if (body?.otp_required) {
+      setOtpStep({ ...body.otp, email, password, remember });
+      toast.info(body.message);
+      setLoading(false);
+      return;
+    }
+    if (!body?.token?.token) return fail(res, "Sign in failed. Please try again.");
+    finish(body, remember);
+  };
+
   const onSubmit = (e) => {
     e.preventDefault();
+    const form = new FormData(e.currentTarget);
+    signIn({
+      email: String(form.get("email") || "").trim(),
+      password: String(form.get("password") || ""),
+      remember: form.get("remember") === "on",
+    });
+  };
+
+  const onVerify = async (e) => {
+    e.preventDefault();
+    const otp = String(new FormData(e.currentTarget).get("otp") || "").trim();
+    setError("");
     setLoading(true);
-    Cookies.set("token", "demo-token", { sameSite: "lax" });
-    router.push("/");
+    const res = await verifyEmployeeLoginOtp({ otp_token: otpStep.otp_token, otp });
+    const body = res?.data;
+    if (!body?.token?.token) return fail(res, "Verification failed. Please try again.");
+    finish(body, otpStep.remember);
   };
 
   return (
@@ -74,7 +142,43 @@ export default function LoginPage() {
 
       {/* Form */}
       <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", p: { xs: 3, sm: 6 } }}>
-        <Box component="form" onSubmit={onSubmit} sx={{ width: "100%", maxWidth: 380 }}>
+        {otpStep ? (
+          <Box component="form" key="otp" onSubmit={onVerify} sx={{ width: "100%", maxWidth: 380 }}>
+            <Box sx={{ width: 44, height: 44, borderRadius: "12px", bgcolor: "primary.main", color: "#fff", display: "grid", placeItems: "center", mb: 2.5 }}>
+              <LuShieldCheck size={22} />
+            </Box>
+            <Typography variant="h4" component="h1">Verify this device</Typography>
+            <Typography color="text.secondary" sx={{ mt: 0.75, mb: 4, fontSize: 14.5 }}>
+              This is your first sign-in from this device. Enter the 6-digit code we sent to <strong>{otpStep.email_hint}</strong>.
+            </Typography>
+
+            <TextField
+              fullWidth
+              autoFocus
+              label="Verification code"
+              name="otp"
+              required
+              autoComplete="one-time-code"
+              error={!!error}
+              helperText={error || undefined}
+              slotProps={{ htmlInput: { inputMode: "numeric", pattern: "[0-9]{6}", maxLength: 6, style: { letterSpacing: "0.4em", fontWeight: 600 } } }}
+            />
+
+            <Button type="submit" fullWidth variant="contained" size="large" loading={loading} endIcon={<LuArrowRight size={16} />} sx={{ py: 1.25, mt: 2.5 }}>
+              Verify and sign in
+            </Button>
+
+            <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
+              <MuiLink component="button" type="button" underline="hover" sx={{ fontSize: 13.5, fontWeight: 600 }} onClick={() => { setOtpStep(null); setError(""); }}>
+                Back
+              </MuiLink>
+              <MuiLink component="button" type="button" underline="hover" sx={{ fontSize: 13.5, fontWeight: 600 }} disabled={loading} onClick={() => signIn(otpStep)}>
+                Resend code
+              </MuiLink>
+            </Box>
+          </Box>
+        ) : (
+        <Box component="form" key="login" onSubmit={onSubmit} sx={{ width: "100%", maxWidth: 380 }}>
           <Typography variant="h4" component="h1">Sign in</Typography>
           <Typography color="text.secondary" sx={{ mt: 0.75, mb: 4, fontSize: 14.5 }}>
             Welcome back. Use your staff account to continue.
@@ -83,18 +187,23 @@ export default function LoginPage() {
           <TextField
             fullWidth
             label="Email"
+            name="email"
             type="email"
+            required
             autoComplete="email"
-            defaultValue="admin@temploy.com"
+            error={!!error}
             sx={{ mb: 2 }}
             slotProps={{ input: { startAdornment: <InputAdornment position="start"><LuMail size={16} /></InputAdornment> } }}
           />
           <TextField
             fullWidth
             label="Password"
+            name="password"
+            required
             type={show ? "text" : "password"}
             autoComplete="current-password"
-            defaultValue="password"
+            error={!!error}
+            helperText={error || undefined}
             slotProps={{
               input: {
                 startAdornment: <InputAdornment position="start"><LuLock size={16} /></InputAdornment>,
@@ -110,18 +219,15 @@ export default function LoginPage() {
           />
 
           <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", my: 1.5 }}>
-            <FormControlLabel control={<Checkbox size="small" defaultChecked />} label={<Typography sx={{ fontSize: 13.5 }}>Keep me signed in</Typography>} />
+            <FormControlLabel control={<Checkbox name="remember" size="small" defaultChecked />} label={<Typography sx={{ fontSize: 13.5 }}>Keep me signed in</Typography>} />
             <MuiLink href="#" underline="hover" sx={{ fontSize: 13.5, fontWeight: 600 }}>Forgot password?</MuiLink>
           </Box>
 
           <Button type="submit" fullWidth variant="contained" size="large" loading={loading} endIcon={<LuArrowRight size={16} />} sx={{ py: 1.25 }}>
             Sign in
           </Button>
-
-          <Typography color="text.secondary" sx={{ mt: 3, fontSize: 12.5, textAlign: "center" }}>
-            Demo mode: any credentials sign you in until the API is connected.
-          </Typography>
         </Box>
+        )}
       </Box>
     </Box>
   );

@@ -12,13 +12,13 @@ export async function ApiRequestHandler(props) {
    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "https://temploy-api-gateway.vercel.app/api";
    const v1 = process.env.NEXT_PUBLIC_API_VERSION_1 || "v1";
    const url = `${baseUrl}/${v1}`;
-   const lang = (await readCookie('NEXT_LOCALE')) || 'en';
+//    const lang = (await readCookie('NEXT_LOCALE')) || 'en';
 
    const headers = {
        'Content-Type': 'application/json',
        Accept: "application/json",
        'Access-Control-Allow-Origin' : '*',
-       'Accept-Language': lang,
+    //    'Accept-Language': lang,
     //    'Accept-Currency' : currency,
    };
     if (props.includeAuth == true) {

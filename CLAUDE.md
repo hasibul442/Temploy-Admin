@@ -17,7 +17,7 @@ npm run lint     # eslint . (flat config; `next lint` no longer exists in Next 1
 
 There is no test suite. Verify changes with `npx eslint src` and `npm run build`. Hydration mismatches can appear **only** against the prerendered production build (`npm run build && npx next start -p <port>`), so check there when touching formatting or data generation. `next start` and `next dev` share `.next/`; don't run `npm run build` while another process depends on a running build.
 
-The middleware file is `src/proxy.js` (Next 16 renamed `middleware` → `proxy`). It redirects to `/auth/login` when the `token` cookie is missing, but only for the paths in its `matcher`. The login page currently sets a demo token for any credentials.
+The middleware file is `src/proxy.js` (Next 16 renamed `middleware` → `proxy`). It redirects to `/auth/login` when the `token` cookie is missing, but only for the paths in its `matcher`. The login page calls `POST auth/employee/login` (`employeeLogin` in `src/utils/services/api/ApiService.jsx`) and stores the returned token in the `token` cookie.
 
 ## Architecture
 
