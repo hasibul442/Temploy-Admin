@@ -14,6 +14,7 @@ import {
   LuLanguages,
   LuShieldCheck,
   LuSettings,
+  LuImage,
 } from "react-icons/lu";
 
 /**
@@ -66,6 +67,7 @@ export const NAV_SECTIONS = [
   {
     title: "Settings",
     items: [
+      { label: "Banners", href: "/banners", icon: LuImage },
       {
         label: "Catalog",
         icon: LuFolderTree,

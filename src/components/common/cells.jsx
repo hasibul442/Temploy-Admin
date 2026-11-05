@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import { Avatar, Box, Switch, Typography } from "@mui/material";
 import { formatCurrency, formatDate, initials } from "@/helper/format";
 
@@ -59,6 +60,33 @@ export function ActiveSwitch({ row, api, field = "active", entity = "Item" }) {
       onClick={(e) => e.stopPropagation()}
       onChange={(e) => api.update(row.id, { [field]: e.target.checked }, `${entity} ${e.target.checked ? "enabled" : "disabled"}`)}
       slotProps={{ input: { "aria-label": `${entity} active` } }}
+    />
+  );
+}
+
+/**
+ * Like ActiveSwitch, but saves through the API first. `onToggle(checked)` resolves with the patch to
+ * apply to the row (the switch only flips then), or null when the request failed (show your own toast).
+ */
+export function RemoteSwitch({ row, api, onToggle, field = "active", label = "Active", disabled = false }) {
+  const [pending, setPending] = useState(false);
+  const change = async (checked) => {
+    setPending(true);
+    try {
+      const patch = await onToggle(checked);
+      if (patch) api.update(row.id, patch);
+    } finally {
+      setPending(false);
+    }
+  };
+  return (
+    <Switch
+      size="small"
+      checked={Boolean(row[field])}
+      disabled={disabled || pending}
+      onClick={(e) => e.stopPropagation()}
+      onChange={(e) => change(e.target.checked)}
+      slotProps={{ input: { "aria-label": label } }}
     />
   );
 }

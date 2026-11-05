@@ -20,11 +20,10 @@ export function proxy(request) {
 
 }
 
+// Every page is private except publicRoutes above. Next's build files and static assets are skipped
+// so they still load on the login page.
 export const config = {
   matcher: [
-    '/',
-    '/categories',
-    '/auth/login',
-    '/auth/register',
+    '/((?!_next/static|_next/image|favicon\\.ico|.*\\.(?:svg|png|jpe?g|gif|webp|ico|woff2?|mp4)$).*)',
   ],
 };

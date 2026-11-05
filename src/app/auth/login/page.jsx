@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import {
@@ -36,6 +36,87 @@ function saveDeviceId(deviceId) {
   }
 }
 
+const OTP_LENGTH = 6;
+
+// One box per digit: typing moves forward, Backspace moves back, pasting fills every box.
+function OtpBoxes({ value, onChange, onComplete, error, disabled }) {
+  const refs = useRef([]);
+  const digits = Array.from({ length: OTP_LENGTH }, (_, i) => value[i] ?? "");
+  const focus = (i) => refs.current[Math.max(0, Math.min(OTP_LENGTH - 1, i))]?.focus();
+
+  const fill = (start, text) => {
+    const incoming = text.replace(/\D/g, "").slice(0, OTP_LENGTH - start);
+    if (!incoming) return;
+    const next = [...digits];
+    incoming.split("").forEach((d, i) => { next[start + i] = d; });
+    const code = next.join("");
+    onChange(code);
+    focus(start + incoming.length);
+    if (!next.includes("")) onComplete(code);
+  };
+
+  const onKeyDown = (i) => (e) => {
+    if (e.key === "Backspace") {
+      e.preventDefault();
+      // Clear this box, or step back and clear the previous one when this box is empty.
+      const target = digits[i] ? i : i - 1;
+      if (target < 0) return;
+      const next = [...digits];
+      next[target] = "";
+      onChange(next.join(""));
+      focus(target);
+    } else if (e.key === "ArrowLeft") {
+      focus(i - 1);
+    } else if (e.key === "ArrowRight") {
+      focus(i + 1);
+    }
+  };
+
+  return (
+    <Box sx={{ display: "grid", gridTemplateColumns: `repeat(${OTP_LENGTH}, 1fr)`, gap: 1.25 }}>
+      {digits.map((digit, i) => (
+        <Box
+          key={i}
+          component="input"
+          ref={(el) => { refs.current[i] = el; }}
+          value={digit}
+          disabled={disabled}
+          autoFocus={i === 0}
+          inputMode="numeric"
+          autoComplete={i === 0 ? "one-time-code" : "off"}
+          aria-label={`Digit ${i + 1}`}
+          // Typing into a filled box gives "old+new": keep the new digit. Longer values (autofill) fill from here.
+          onChange={(e) => {
+            const v = e.target.value;
+            fill(i, digit && v.length === 2 ? v.replace(digit, "") : v);
+          }}
+          onKeyDown={onKeyDown(i)}
+          onPaste={(e) => { e.preventDefault(); fill(0, e.clipboardData.getData("text")); }}
+          onFocus={(e) => e.target.select()}
+          sx={{
+            width: "100%",
+            minWidth: 0,
+            height: 56,
+            textAlign: "center",
+            fontSize: 22,
+            fontWeight: 700,
+            color: "text.primary",
+            bgcolor: "background.paper",
+            border: "1.5px solid",
+            borderColor: error ? "error.main" : digit ? "primary.main" : "divider",
+            borderRadius: "12px",
+            outline: "none",
+            caretColor: "transparent",
+            transition: "border-color .15s, box-shadow .15s",
+            "&:focus": { borderColor: error ? "error.main" : "primary.main", boxShadow: "0 0 0 3px rgba(46, 125, 50, 0.18)" },
+            "&:disabled": { opacity: 0.6 },
+          }}
+        />
+      ))}
+    </Box>
+  );
+}
+
 export default function LoginPage() {
   const router = useRouter();
   const [show, setShow] = useState(false);
@@ -43,6 +124,7 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   // Set when the API asks for an OTP: { otp_token, email_hint }, plus the credentials for "Resend code".
   const [otpStep, setOtpStep] = useState(null);
+  const [otp, setOtp] = useState("");
 
   const fail = (res, fallback) => {
     const message = res?.message || res?.data?.message || fallback;
@@ -67,6 +149,7 @@ export default function LoginPage() {
 
     if (body?.otp_required) {
       setOtpStep({ ...body.otp, email, password, remember });
+      setOtp("");
       toast.info(body.message);
       setLoading(false);
       return;
@@ -85,15 +168,22 @@ export default function LoginPage() {
     });
   };
 
-  const onVerify = async (e) => {
-    e.preventDefault();
-    const otp = String(new FormData(e.currentTarget).get("otp") || "").trim();
+  const verify = async (code) => {
+    if (loading || code.length !== OTP_LENGTH) return;
     setError("");
     setLoading(true);
-    const res = await verifyEmployeeLoginOtp({ otp_token: otpStep.otp_token, otp });
+    const res = await verifyEmployeeLoginOtp({ otp_token: otpStep.otp_token, otp: code });
     const body = res?.data;
-    if (!body?.token?.token) return fail(res, "Verification failed. Please try again.");
+    if (!body?.token?.token) {
+      setOtp(""); // clear the boxes so the code can be typed again
+      return fail(res, "Verification failed. Please try again.");
+    }
     finish(body, otpStep.remember);
+  };
+
+  const onVerify = (e) => {
+    e.preventDefault();
+    verify(otp);
   };
 
   return (
@@ -152,24 +242,17 @@ export default function LoginPage() {
               This is your first sign-in from this device. Enter the 6-digit code we sent to <strong>{otpStep.email_hint}</strong>.
             </Typography>
 
-            <TextField
-              fullWidth
-              autoFocus
-              label="Verification code"
-              name="otp"
-              required
-              autoComplete="one-time-code"
-              error={!!error}
-              helperText={error || undefined}
-              slotProps={{ htmlInput: { inputMode: "numeric", pattern: "[0-9]{6}", maxLength: 6, style: { letterSpacing: "0.4em", fontWeight: 600 } } }}
-            />
+            <OtpBoxes value={otp} onChange={(v) => { setOtp(v); setError(""); }} onComplete={verify} error={!!error} disabled={loading} />
+            <Typography color={error ? "error" : "text.secondary"} sx={{ mt: 1.25, fontSize: 12.5 }}>
+              {error || "Use the code from the most recent email. Each new code replaces the previous one."}
+            </Typography>
 
-            <Button type="submit" fullWidth variant="contained" size="large" loading={loading} endIcon={<LuArrowRight size={16} />} sx={{ py: 1.25, mt: 2.5 }}>
+            <Button type="submit" fullWidth variant="contained" size="large" loading={loading} disabled={otp.length !== OTP_LENGTH} endIcon={<LuArrowRight size={16} />} sx={{ py: 1.25, mt: 2.5 }}>
               Verify and sign in
             </Button>
 
             <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
-              <MuiLink component="button" type="button" underline="hover" sx={{ fontSize: 13.5, fontWeight: 600 }} onClick={() => { setOtpStep(null); setError(""); }}>
+              <MuiLink component="button" type="button" underline="hover" sx={{ fontSize: 13.5, fontWeight: 600 }} onClick={() => { setOtpStep(null); setOtp(""); setError(""); }}>
                 Back
               </MuiLink>
               <MuiLink component="button" type="button" underline="hover" sx={{ fontSize: 13.5, fontWeight: 600 }} disabled={loading} onClick={() => signIn(otpStep)}>

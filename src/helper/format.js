@@ -23,6 +23,16 @@ export function formatStat(value, format) {
 export const formatNumber = (v) => whole.format(v);
 export const formatCurrency = (v) => usd.format(v);
 
+/**
+ * API timestamp (ISO UTC) → date in the viewer's own time zone, e.g. "Nov 5, 2026".
+ * Only for data fetched in the browser: on a prerendered page the server's zone could differ (hydration).
+ */
+export function formatLocalDate(iso) {
+  if (!iso) return "—";
+  return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+}
+
+/** Date-only mock value ("2026-11-04") → "Nov 4, 2026". */
 export function formatDate(iso) {
   return new Date(iso + "T00:00:00Z").toLocaleDateString("en-US", {
     month: "short",

@@ -51,8 +51,11 @@ import { clay, clayRgb } from "@/theme/clay";
  *  filters?                 [{ field, label, options: [...] }]   ("Any" is added automatically)
  *  rowActions?(row, api)    => [{ label, icon?, onClick, tone?: "error", divider? }]
  *  detail?                  { title?(row), render(row, api) }    row click opens a side drawer
- *  form?                    { entity, fields: [...], defaults, toRow?(values), canDelete?(row) }  enables Add + Edit + Delete
+ *  form?                    { entity, fields: [...], defaults, toRow?(values), canDelete?(row), onSave?, onDelete? }  enables Add + Edit + Delete
  *                           field: { name, label, type: text|number|select|switch|textarea, options?, required?, helperText?, half? }
+ *                           onSave?(values, id, api)  async; for pages wired to the API. Resolve with the saved row to apply it,
+ *                                                     or null to keep the dialog open (show your own error toast). id is null on Add.
+ *                           onDelete?(row, api)       async; resolve true to remove the row locally.
  *  headerActions?           Extra nodes for the header (before Export / Add).
  *  minWidth?                Table min width (default 860).
  *  noun?                    Plural noun for empty state / counts (default: title lowercased).
@@ -86,6 +89,7 @@ export default function ResourcePage({
   const [detailRow, setDetailRow] = useState(null);
   const [editing, setEditing] = useState(null); // { values, id? }
   const [confirmState, setConfirmState] = useState(null);
+  const [saving, setSaving] = useState(false); // an onSave request is in flight
   const nextId = useRef(0); // ids for rows created locally
   const label = noun || title.toLowerCase();
 
@@ -144,14 +148,17 @@ export default function ResourcePage({
             body: `"${row.name ?? row.title ?? row.id}" will be removed. This can't be undone.`,
             confirmLabel: "Delete",
             tone: "error",
-            onConfirm: () => api.remove(row.id, `${capitalize(form.entity)} deleted`),
+            onConfirm: async () => {
+              if (form.onDelete && !(await form.onDelete(row, api))) return;
+              api.remove(row.id, `${capitalize(form.entity)} deleted`);
+            },
           }),
       },
     ].filter(Boolean);
   };
   const hasActions = Boolean(rowActions || form);
 
-  const saveForm = () => {
+  const saveForm = async () => {
     const missing = form.fields.find((f) => f.required && String(editing.values[f.name] ?? "").trim() === "");
     if (missing) {
       toast.error(`${missing.label} is required`);
@@ -160,6 +167,19 @@ export default function ResourcePage({
     const values = Object.fromEntries(
       form.fields.map((f) => [f.name, f.type === "number" ? Number(editing.values[f.name]) || 0 : editing.values[f.name]])
     );
+    if (form.onSave) {
+      setSaving(true);
+      try {
+        const saved = await form.onSave(values, editing.id ?? null, api);
+        if (!saved) return; // request failed: keep the dialog open with the user's input
+        if (editing.id != null) api.update(editing.id, saved, `${capitalize(form.entity)} updated`);
+        else api.create(saved, `${capitalize(form.entity)} added`);
+        setEditing(null);
+      } finally {
+        setSaving(false);
+      }
+      return;
+    }
     if (editing.id != null) {
       api.update(editing.id, form.toRow ? form.toRow(values, true) : values, `${capitalize(form.entity)} updated`);
     } else {
@@ -342,7 +362,7 @@ export default function ResourcePage({
 
       {/* Add / edit dialog */}
       {form && (
-        <Dialog open={Boolean(editing)} onClose={() => setEditing(null)} fullWidth maxWidth="sm">
+        <Dialog open={Boolean(editing)} onClose={() => !saving && setEditing(null)} fullWidth maxWidth="sm">
           <DialogTitle sx={{ fontWeight: 700 }}>{editing?.id != null ? `Edit ${form.entity}` : `Add ${form.entity}`}</DialogTitle>
           <DialogContent>
             <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" }, gap: 2, pt: 1 }}>
@@ -358,8 +378,10 @@ export default function ResourcePage({
             </Box>
           </DialogContent>
           <DialogActions sx={{ px: 3, pb: 2.5 }}>
-            <Button color="inherit" onClick={() => setEditing(null)}>Cancel</Button>
-            <Button variant="contained" onClick={saveForm}>{editing?.id != null ? "Save changes" : `Add ${form.entity}`}</Button>
+            <Button color="inherit" onClick={() => setEditing(null)} disabled={saving}>Cancel</Button>
+            <Button variant="contained" onClick={saveForm} disabled={saving}>
+              {saving ? "Saving…" : editing?.id != null ? "Save changes" : `Add ${form.entity}`}
+            </Button>
           </DialogActions>
         </Dialog>
       )}
@@ -385,9 +407,19 @@ export default function ResourcePage({
   );
 }
 
+// Add/Edit dialog inputs use plain MUI styling, undoing the theme's clay input overrides (theme.js).
+export const RAW_INPUT_SX = {
+  "& .MuiOutlinedInput-root": { borderRadius: "4px", backgroundColor: "transparent", boxShadow: "none" },
+  "& .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(0, 0, 0, 0.23)", borderWidth: 1 },
+  "& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline": { borderColor: "text.primary" },
+  "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "primary.main", borderWidth: 2 },
+  "& .MuiInputLabel-root": { fontWeight: 400, color: "text.secondary" },
+  "& .MuiInputLabel-root.Mui-focused": { color: "primary.main" },
+};
+
 function FormField({ field: f, value, onChange }) {
   const common = { label: f.label, required: f.required, helperText: f.helperText, fullWidth: true, size: "small" };
-  const span = f.half ? undefined : { gridColumn: "1 / -1" };
+  const span = { ...RAW_INPUT_SX, ...(f.half ? {} : { gridColumn: "1 / -1" }) };
   if (f.type === "switch") {
     return (
       <FormControlLabel

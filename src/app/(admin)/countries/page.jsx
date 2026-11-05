@@ -1,42 +1,135 @@
 "use client";
-import { LuGlobe, LuCircleCheck, LuUsers } from "react-icons/lu";
+import { Box } from "@mui/material";
+import { LuGlobe, LuCircleCheck, LuMap } from "react-icons/lu";
+import { toast } from "react-toastify";
 import ResourcePage from "@/components/common/ResourcePage";
-import { TitleCell, ActiveSwitch, Tag } from "@/components/common/cells";
-import { countries, CURRENCY_CODES } from "@/data/settings";
-import { formatNumber } from "@/helper/format";
+import StatusChip from "@/components/common/StatusChip";
+import { TitleCell, RemoteSwitch, Tag } from "@/components/common/cells";
+import { useApiList, ApiListFallback } from "@/components/common/ApiList";
+import { getErrorMessage } from "@/utils/services/api/apiError";
+import { getCountries, createCountry, updateCountry, deleteCountry } from "@/utils/services/api/CountryService";
+
+
+const TITLE = "Countries";
+const SUBTITLE = "Countries users can sign up from, with their dialing code and local currency.";
+const CONTINENTS = ["Africa", "Asia", "Europe", "North America", "Oceania", "South America", "Antarctica"];
+
+/** API country → row. Form field names (snake_case, as the API takes them) match the row keys so Edit pre-fills. */
+function toRow(c) {
+  return {
+    id: c.id,
+    name: c.country, // shown in ResourcePage's delete confirmation
+    country: c.country,
+    abbreviation: c.abbreviation,
+    calling_code: c.callingCode,
+    capital: c.capital,
+    continent: c.continent,
+    currency_code: c.currencyCode,
+    currency_name: c.currencyName,
+    flag: c.flag ?? "",
+    active: Boolean(c.isActive),
+    state: c.isActive ? "Active" : "Inactive",
+  };
+}
+
+const FORM_FIELDS = ["country", "abbreviation", "calling_code", "capital", "continent", "currency_code", "currency_name", "flag"];
+
+function toBody(values) {
+  const body = Object.fromEntries(FORM_FIELDS.map((f) => [f, String(values[f] ?? "").trim()]));
+  body.abbreviation = body.abbreviation.toUpperCase();
+  body.currency_code = body.currency_code.toUpperCase();
+  body.is_active = Boolean(values.active);
+  return body;
+}
+
+async function save(values, id) {
+  const res = id == null ? await createCountry(toBody(values)) : await updateCountry(id, toBody(values));
+  if (!res?.data) {
+    toast.error(getErrorMessage(res));
+    return null;
+  }
+  return toRow(res.data.data);
+}
+
+async function toggleActive(row, checked) {
+  const res = await updateCountry(row.id, { is_active: checked });
+  if (!res?.data) {
+    toast.error(getErrorMessage(res));
+    return null;
+  }
+  toast.success(`${row.country} ${checked ? "enabled" : "disabled"}`);
+  return toRow(res.data.data);
+}
+
+async function remove(row) {
+  const res = await deleteCountry(row.id);
+  if (!res?.data) toast.error(getErrorMessage(res));
+  return Boolean(res?.data);
+}
 
 export default function CountriesPage() {
+  const { rows, error, reload } = useApiList(getCountries, toRow);
+  if (!rows) return <ApiListFallback title={TITLE} subtitle={SUBTITLE} error={error} onRetry={reload} />;
+
+  // Continents from the data, plus the standard list for the filter and the form
+  const continents = [...new Set([...CONTINENTS, ...rows.map((c) => c.continent)])].sort((a, b) => a.localeCompare(b));
+
   return (
     <ResourcePage
-      title="Countries"
-      subtitle="Countries users can register from, with their dialing code and local currency."
+      title={TITLE}
+      subtitle={SUBTITLE}
       noun="countries"
-      rows={countries}
+      rows={rows}
       stats={[
         { label: "Countries", value: (r) => r.length, icon: <LuGlobe size={20} /> },
         { label: "Active", value: (r) => r.filter((c) => c.active).length, icon: <LuCircleCheck size={20} />, tone: "success" },
-        { label: "Users", value: (r) => formatNumber(r.reduce((s, c) => s + c.users, 0)), icon: <LuUsers size={20} />, tone: "info" },
+        { label: "Continents", value: (r) => new Set(r.map((c) => c.continent)).size, icon: <LuMap size={20} />, tone: "info" },
       ]}
-      search={{ keys: ["name", "iso2", "phoneCode"], placeholder: "Search by name, ISO or dial code" }}
-      filters={[{ field: "currency", label: "Currency", options: CURRENCY_CODES }]}
+      tabs={{ field: "state", options: ["All", "Active", "Inactive"] }}
+      search={{ keys: ["country", "abbreviation", "calling_code", "capital", "currency_code"], placeholder: "Search by name, ISO, dial code or currency" }}
+      filters={[{ field: "continent", label: "Continent", options: continents }]}
       columns={[
-        { key: "name", label: "Country", render: (c) => <TitleCell title={c.name} sub={c.iso2} /> },
-        { key: "phoneCode", label: "Dial code", render: (c) => <span className="num">{c.phoneCode}</span> },
-        { key: "currency", label: "Currency", render: (c) => <Tag>{c.currency}</Tag> },
-        { key: "users", label: "Users", align: "right", render: (c) => <span className="num">{formatNumber(c.users)}</span> },
-        { key: "active", label: "Active", align: "center", render: (c, api) => <ActiveSwitch row={c} api={api} entity={c.name} /> },
+        {
+          key: "country",
+          label: "Country",
+          minWidth: 220,
+          render: (c) => (
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1.25 }}>
+              <Box component="span" aria-hidden="true" sx={{ fontSize: 22, lineHeight: 1, width: 28, textAlign: "center" }}>{c.flag}</Box>
+              <TitleCell title={c.country} sub={c.abbreviation} />
+            </Box>
+          ),
+        },
+        { key: "calling_code", label: "Dial code", render: (c) => <span className="num">{c.calling_code}</span> },
+        { key: "capital", label: "Capital" },
+        { key: "continent", label: "Continent", render: (c) => <Tag>{c.continent}</Tag> },
+        { key: "currency_code", label: "Currency", render: (c) => <TitleCell title={c.currency_code} sub={c.currency_name} maxWidth={180} /> },
+        { key: "state", label: "Status", render: (c) => <StatusChip status={c.state} /> },
+        {
+          key: "active",
+          label: "Active",
+          align: "center",
+          render: (c, api) => (
+            <RemoteSwitch row={c} api={api} label={`${c.country} active`} onToggle={(checked) => toggleActive(c, checked)} />
+          ),
+        },
       ]}
       form={{
         entity: "country",
-        defaults: { active: true, users: 0, currency: "USD" },
+        defaults: { continent: "Asia", flag: "", active: true },
         fields: [
-          { name: "name", label: "Name", required: true },
-          { name: "iso2", label: "ISO code", required: true, half: true, helperText: "2 letters, e.g. BD" },
-          { name: "phoneCode", label: "Dial code", required: true, half: true, helperText: "e.g. +880" },
-          { name: "currency", label: "Currency", type: "select", options: CURRENCY_CODES },
-          { name: "active", label: "Active", type: "switch" },
+          { name: "country", label: "Name", required: true },
+          { name: "abbreviation", label: "ISO code", required: true, half: true, helperText: "2 letters, e.g. BD" },
+          { name: "calling_code", label: "Dial code", required: true, half: true, helperText: "e.g. +880" },
+          { name: "capital", label: "Capital", required: true, half: true },
+          { name: "continent", label: "Continent", type: "select", options: continents, required: true, half: true },
+          { name: "currency_code", label: "Currency code", required: true, half: true, helperText: "3 letters, e.g. BDT" },
+          { name: "currency_name", label: "Currency name", required: true, half: true },
+          { name: "flag", label: "Flag emoji", half: true, helperText: "e.g. 🇧🇩" },
+          { name: "active", label: "Active (offered at sign-up)", type: "switch" },
         ],
-        toRow: (v) => ({ iso2: String(v.iso2).trim().toUpperCase() }),
+        onSave: save,
+        onDelete: remove,
       }}
     />
   );
