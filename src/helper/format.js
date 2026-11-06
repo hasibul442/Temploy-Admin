@@ -32,6 +32,35 @@ export function formatLocalDate(iso) {
   return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 }
 
+/** API timestamp → date and time in the viewer's zone, e.g. "Nov 5, 2026, 3:40 PM". Browser-fetched data only. */
+export function formatLocalDateTime(iso) {
+  if (!iso) return "—";
+  return new Date(iso).toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" });
+}
+
+/** Integer cents in their own currency → "$150", "৳5,000.50". Amounts are never converted between currencies. */
+export function formatMoney(cents, currency) {
+  if (cents === null || cents === undefined) return "—";
+  const amount = cents / 100;
+  try {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: currency || "USD",
+      minimumFractionDigits: Number.isInteger(amount) ? 0 : 2,
+    }).format(amount);
+  } catch {
+    // Unknown currency code: show the number with the code
+    return `${amount.toLocaleString("en-US")} ${currency ?? ""}`.trim();
+  }
+}
+
+/** API enum → label: "IN_PROGRESS" → "In progress". */
+export function humanize(value) {
+  if (!value) return "—";
+  const text = String(value).toLowerCase().replaceAll("_", " ");
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
 /** Date-only mock value ("2026-11-04") → "Nov 4, 2026". */
 export function formatDate(iso) {
   return new Date(iso + "T00:00:00Z").toLocaleDateString("en-US", {

@@ -8,6 +8,23 @@ async function readCookie(name) {
    return Cookies.get(name);
 }
 
+// The gateway's admin auth answers 401 (expired/invalid token, employee gone) or 403 with
+// `auth_status: false` (not an admin token): the session is over either way.
+const isSessionGone = (status, data) => status === 401 || data?.auth_status === false;
+
+let redirecting = false;
+// The proxy only checks that the cookie exists, so drop the dead token and go to login.
+// The promise never settles so the page doesn't flash an error while the browser navigates.
+function endSession() {
+   if (typeof window === 'undefined') return { message: 'Session expired', response: { status: 401 } };
+   Cookies.remove('token');
+   if (!redirecting) {
+      redirecting = true;
+      window.location.replace('/auth/login');
+   }
+   return new Promise(() => {});
+}
+
 export async function ApiRequestHandler(props) {
    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "https://temploy-api-gateway.vercel.app/api";
    const v1 = process.env.NEXT_PUBLIC_API_VERSION_1 || "v1";
@@ -42,6 +59,7 @@ export async function ApiRequestHandler(props) {
        const data = text ? JSON.parse(text) : null;
 
        if (!res.ok) {
+           if (props.includeAuth && isSessionGone(res.status, data)) return endSession();
            return {
                message: data?.message || `Request failed with status ${res.status}`,
                response: { status: res.status, data },
