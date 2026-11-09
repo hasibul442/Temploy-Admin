@@ -1,5 +1,5 @@
 /**
- * Mock marketplace data (jobs, offers, orders).
+ * Mock marketplace data (jobs, offers).
  * Deterministic (index-based, no Math.random) so server and client renders match.
  * Replace each export with an API call when wiring up the backend.
  */
@@ -88,22 +88,3 @@ export const offers = Array.from({ length: 30 }, (_, i) => ({
   created: daysAgo(i * 4),
   status: pick(OFFER_STATUSES, i * 5),
 }));
-
-// ---------------------------------------------------------------- Orders
-const ORDER_STATUSES = ["In progress", "Delivered", "Completed", "Completed", "In progress", "Disputed", "Cancelled", "Completed"];
-
-export const orders = Array.from({ length: 44 }, (_, i) => {
-  const amount = 40 + ((i * 211) % 1900);
-  return {
-    id: `ORD-${10482 - i}`,
-    gig: pick(OFFER_TITLES, i * 3).replace(/^I will /, "").replace(/^./, (c) => c.toUpperCase()),
-    client: pick(CLIENTS, i),
-    freelancer: pick(PEOPLE, i * 5),
-    category: pick(CATEGORY_NAMES, i * 2),
-    amount,
-    fee: Math.round(amount * 0.1),
-    placed: daysAgo(Math.floor(i / 2)),
-    due: daysAgo(Math.floor(i / 2) - 7),
-    status: pick(ORDER_STATUSES, i * 3),
-  };
-});

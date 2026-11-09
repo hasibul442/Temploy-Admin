@@ -24,6 +24,13 @@ const TONES = {
   Interviewing: "info",
   Confirmed: "info",
   "Paid escrow": "info",
+  // Payment statuses (order details)
+  "Requires auth": "warning",
+  "Pre authorized": "info",
+  Captured: "success",
+  "Partially captured": "info",
+  Released: "success",
+  "Partially refunded": "warning",
   Scheduled: "info",
   "Checked in": "primary",
   "Overtime pending": "warning",

@@ -18,6 +18,7 @@ import StatusChip from "@/components/common/StatusChip";
 import { StatTiles } from "@/components/common/ResourcePage";
 import { Tag } from "@/components/common/cells";
 import Facts from "@/components/common/Facts";
+import BookingTimeline from "@/components/common/BookingTimeline";
 import EditJobDialog from "@/components/jobs/EditJobDialog";
 import { formatLocalDate, formatLocalDateTime, formatMoney, humanize, initials } from "@/helper/format";
 import { getErrorMessage } from "@/utils/services/api/apiError";
@@ -350,7 +351,7 @@ function BookingCard({ booking: b }) {
 
         <Box sx={{ p: 2, borderRadius: "14px", bgcolor: "action.hover" }}>
           <Heading>Timeline</Heading>
-          <Timeline events={b.timeline} />
+          <BookingTimeline events={b.timeline} />
         </Box>
       </Box>
 
@@ -408,38 +409,5 @@ function BookingCard({ booking: b }) {
         </>
       )}
     </Card>
-  );
-}
-
-/** Booking events, oldest first, as a vertical timeline. */
-function Timeline({ events }) {
-  if (!events?.length) return <Typography sx={{ fontSize: 13, color: "text.secondary" }}>No events yet.</Typography>;
-  return (
-    <Box component="ol" sx={{ listStyle: "none", m: 0, p: 0 }}>
-      {events.map((e, i) => (
-        <Box component="li" key={e.id} sx={{ display: "flex", gap: 1.5 }}>
-          <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", pt: 0.6 }}>
-            <Box sx={{ width: 10, height: 10, borderRadius: "50%", bgcolor: i === events.length - 1 ? "primary.main" : "text.disabled", flexShrink: 0 }} />
-            {i < events.length - 1 && <Box sx={{ width: 2, flex: 1, bgcolor: "divider", my: 0.5 }} />}
-          </Box>
-          <Box sx={{ pb: i < events.length - 1 ? 1.25 : 0, minWidth: 0 }}>
-            <Typography sx={{ fontSize: 13.5, fontWeight: 600 }}>{humanize(e.type)}</Typography>
-            <Typography sx={{ fontSize: 12, color: "text.secondary" }}>
-              {formatLocalDateTime(e.createdAt)} · {e.actor ? personName(e.actor) : "System"}
-            </Typography>
-            {e.distanceFromSiteM !== null && (
-              <Typography sx={{ fontSize: 12, color: e.withinRadius === false ? "error.main" : "text.secondary" }}>
-                {e.distanceFromSiteM} m from site{e.withinRadius === false ? " (outside the check-in radius)" : ""}
-              </Typography>
-            )}
-            {e.payload && Object.keys(e.payload).length > 0 && (
-              <Typography sx={{ fontSize: 12, color: "text.secondary" }}>
-                {Object.entries(e.payload).map(([k, v]) => `${humanize(k)}: ${typeof v === "object" ? JSON.stringify(v) : humanize(String(v))}`).join(" · ")}
-              </Typography>
-            )}
-          </Box>
-        </Box>
-      ))}
-    </Box>
   );
 }
