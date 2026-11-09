@@ -417,7 +417,8 @@ export const RAW_INPUT_SX = {
   "& .MuiInputLabel-root.Mui-focused": { color: "primary.main" },
 };
 
-function FormField({ field: f, value, onChange }) {
+/** One Add/Edit dialog input (see `form.fields` above). Also used by standalone dialogs. */
+export function FormField({ field: f, value, onChange }) {
   const common = { label: f.label, required: f.required, helperText: f.helperText, fullWidth: true, size: "small" };
   const span = { ...RAW_INPUT_SX, ...(f.half ? {} : { gridColumn: "1 / -1" }) };
   if (f.type === "switch") {
