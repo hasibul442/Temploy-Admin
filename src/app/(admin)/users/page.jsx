@@ -1,5 +1,7 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Box,
   Button,
@@ -31,17 +33,19 @@ import {
   Switch,
   CircularProgress,
 } from "@mui/material";
-import { LuSearch, LuDownload, LuEllipsisVertical, LuBadgeCheck, LuPencil, LuUserX, LuUserCheck, LuRefreshCw } from "react-icons/lu";
+import { LuSearch, LuDownload, LuEllipsisVertical, LuBadgeCheck, LuPencil, LuUserX, LuUserCheck, LuRefreshCw, LuEye } from "react-icons/lu";
 import { toast } from "react-toastify";
 import PageHeader from "@/components/common/PageHeader";
 import StatusChip from "@/components/common/StatusChip";
 import { RAW_INPUT_SX } from "@/components/common/ResourcePage";
 import { formatLocalDate, initials } from "@/helper/format";
 import { getErrorMessage } from "@/utils/services/api/apiError";
-import { getUsers, updateUser, setUserStatus } from "@/utils/services/api/UserService";
+import { getUsers, setUserStatus } from "@/utils/services/api/UserService";
+import EditUserDialog from "@/components/users/EditUserDialog";
 
 /*
  * Marketplace users, from the API (/admin/users). Search, filters and pagination run on the server.
+ * A name (or "View details") opens /users/[id].
  * Deactivating a user blocks every request they make.
  */
 
@@ -58,6 +62,7 @@ const SEARCH_DELAY_MS = 350;
 const fullName = (u) => `${u.fName ?? ""} ${u.lName ?? ""}`.trim() || u.email;
 
 export default function UsersPage() {
+  const router = useRouter();
   const [type, setType] = useState("All");
   const [status, setStatus] = useState("Any");
   const [query, setQuery] = useState("");
@@ -109,8 +114,6 @@ export default function UsersPage() {
   }, [type, status, search, page, rowsPerPage]);
 
   useEffect(() => {
-    // Fetch when filters or the page change; state is set after the await.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     load();
   }, [load, reloadKey]);
 
@@ -223,7 +226,7 @@ export default function UsersPage() {
                       </Avatar>
                       <Box sx={{ minWidth: 0 }}>
                         <Typography sx={{ fontSize: 13.5, fontWeight: 600, display: "flex", alignItems: "center", gap: 0.5 }}>
-                          {fullName(u)}
+                          <Link href={`/users/${u.id}`}>{fullName(u)}</Link>
                           {u.isKycVerified && (
                             <Tooltip title="Identity verified (KYC)">
                               <Box component="span" sx={{ display: "inline-flex", color: "info.main" }}>
@@ -278,6 +281,10 @@ export default function UsersPage() {
 
       {/* Row actions */}
       <Menu anchorEl={menu?.anchor} open={Boolean(menu)} onClose={() => setMenu(null)} anchorOrigin={{ vertical: "bottom", horizontal: "right" }} transformOrigin={{ vertical: "top", horizontal: "right" }}>
+        <MenuItem onClick={() => { router.push(`/users/${menu.user.id}`); setMenu(null); }}>
+          <ListItemIcon sx={{ color: "inherit" }}><LuEye size={15} /></ListItemIcon>
+          View details
+        </MenuItem>
         <MenuItem onClick={() => { setEditing(menu.user); setMenu(null); }}>
           <ListItemIcon sx={{ color: "inherit" }}><LuPencil size={15} /></ListItemIcon>
           Edit
@@ -321,74 +328,5 @@ export default function UsersPage() {
         </DialogActions>
       </Dialog>
     </>
-  );
-}
-
-/** Edit a user's details (PUT admin/users/:id). Sends only the fields that changed. */
-function EditUserDialog({ user, onClose, onSaved }) {
-  const initial = {
-    f_name: user.fName ?? "",
-    l_name: user.lName ?? "",
-    email: user.email ?? "",
-    phone: user.phone ?? "",
-    country: user.country ?? "",
-    user_role: user.userRole ?? "",
-    user_type: user.userType ?? "REGULAR",
-    is_email_verified: Boolean(user.isEmailVerified),
-    is_phone_verified: Boolean(user.isPhoneVerified),
-  };
-  const [values, setValues] = useState(initial);
-  const [saving, setSaving] = useState(false);
-  const set = (name) => (e) => setValues((v) => ({ ...v, [name]: e.target.type === "checkbox" ? e.target.checked : e.target.value }));
-
-  const save = async () => {
-    const body = Object.fromEntries(Object.entries(values).filter(([k, v]) => v !== initial[k]));
-    if (Object.keys(body).length === 0) return onClose();
-    setSaving(true);
-    const res = await updateUser(user.id, body);
-    setSaving(false);
-    if (!res?.data) return toast.error(getErrorMessage(res));
-    toast.success("User updated");
-    onSaved(res.data.data);
-  };
-
-  const field = (name, label, props = {}) => (
-    <TextField label={label} value={values[name]} onChange={set(name)} size="small" fullWidth sx={RAW_INPUT_SX} {...props} />
-  );
-
-  return (
-    <Dialog open onClose={() => !saving && onClose()} fullWidth maxWidth="sm">
-      <DialogTitle sx={{ fontWeight: 700 }}>Edit user</DialogTitle>
-      <DialogContent>
-        <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" }, gap: 2, pt: 1 }}>
-          {field("f_name", "First name", { required: true })}
-          {field("l_name", "Last name", { required: true })}
-          {field("email", "Email", { required: true, type: "email" })}
-          {field("phone", "Phone")}
-          {field("country", "Country", { helperText: "ISO code, e.g. BD" })}
-          {field("user_role", "Type", {
-            select: true,
-            children: [
-              <MenuItem key="freelancer" value="freelancer">Freelancer</MenuItem>,
-              <MenuItem key="employer" value="employer">Client</MenuItem>,
-            ],
-          })}
-          {field("user_type", "Plan", {
-            select: true,
-            children: [
-              <MenuItem key="REGULAR" value="REGULAR">Regular</MenuItem>,
-              <MenuItem key="PRO" value="PRO">Pro</MenuItem>,
-            ],
-          })}
-          <Box />
-          <FormControlLabel control={<Switch checked={values.is_email_verified} onChange={set("is_email_verified")} />} label="Email verified" />
-          <FormControlLabel control={<Switch checked={values.is_phone_verified} onChange={set("is_phone_verified")} />} label="Phone verified" />
-        </Box>
-      </DialogContent>
-      <DialogActions sx={{ px: 3, pb: 2.5 }}>
-        <Button color="inherit" onClick={onClose} disabled={saving}>Cancel</Button>
-        <Button variant="contained" onClick={save} disabled={saving}>{saving ? "Saving…" : "Save changes"}</Button>
-      </DialogActions>
-    </Dialog>
   );
 }

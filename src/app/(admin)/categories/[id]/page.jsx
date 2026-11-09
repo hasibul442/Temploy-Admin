@@ -37,6 +37,7 @@ import PageHeader from "@/components/common/PageHeader";
 import SectionCard from "@/components/common/SectionCard";
 import StatusChip from "@/components/common/StatusChip";
 import Facts from "@/components/common/Facts";
+import FormDialog from "@/components/common/FormDialog";
 import { StatTiles } from "@/components/common/ResourcePage";
 import { TitleCell } from "@/components/common/cells";
 import {
@@ -49,7 +50,6 @@ import {
   subCategoryFields,
   CATEGORY_FIELDS,
   SUB_CATEGORY_DEFAULTS,
-  FormDialog,
   valuesFrom,
   ColorDot,
 } from "@/components/categories/categoryForms";

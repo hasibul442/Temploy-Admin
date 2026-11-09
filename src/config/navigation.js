@@ -8,6 +8,7 @@ import {
   LuSparkles,
   LuWallet,
   LuArrowDownToLine,
+  LuLandmark,
   LuFlag,
   LuScale,
   LuFolderTree,
@@ -55,6 +56,7 @@ export const NAV_SECTIONS = [
     items: [
       { label: "Transactions", href: "/transactions", icon: LuWallet },
       { label: "Withdrawals", href: "/withdrawals", icon: LuArrowDownToLine, badge: 5 },
+      { label: "Payout methods", href: "/payout-methods", icon: LuLandmark },
     ],
   },
   {
