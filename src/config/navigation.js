@@ -16,6 +16,7 @@ import {
   LuShieldCheck,
   LuSettings,
   LuImage,
+  LuIdCard,
 } from "react-icons/lu";
 
 /**
@@ -55,6 +56,7 @@ export const NAV_SECTIONS = [
   {
     title: "Moderation",
     items: [
+      { label: "KYC verification", href: "/kyc", icon: LuIdCard },
       { label: "Reports", href: "/reports", icon: LuFlag, badge: 8 },
       { label: "Disputes", href: "/disputes", icon: LuScale, badge: 3 },
     ],
