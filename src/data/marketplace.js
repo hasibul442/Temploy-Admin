@@ -1,5 +1,5 @@
 /**
- * Mock marketplace data (jobs, offers, orders, skills).
+ * Mock marketplace data (jobs, offers, orders).
  * Deterministic (index-based, no Math.random) so server and client renders match.
  * Replace each export with an API call when wiring up the backend.
  */
@@ -107,24 +107,3 @@ export const orders = Array.from({ length: 44 }, (_, i) => {
     status: pick(ORDER_STATUSES, i * 3),
   };
 });
-
-// ---------------------------------------------------------------- Skills
-const SKILLS = [
-  ["React", "Development & IT"], ["Next.js", "Development & IT"], ["Laravel", "Development & IT"],
-  ["Node.js", "Development & IT"], ["Flutter", "Development & IT"], ["Python", "Development & IT"],
-  ["Figma", "Design & Creative"], ["Logo design", "Design & Creative"], ["Illustration", "Design & Creative"],
-  ["Video editing", "Design & Creative"], ["Copywriting", "Writing & Translation"], ["Bangla translation", "Writing & Translation"],
-  ["Technical writing", "Writing & Translation"], ["SEO", "Sales & Marketing"], ["Google Ads", "Sales & Marketing"],
-  ["Social media marketing", "Sales & Marketing"], ["Data entry", "Admin Support"], ["Virtual assistance", "Admin Support"],
-  ["Bookkeeping", "Finance & Accounting"], ["Tax preparation", "Finance & Accounting"],
-];
-
-export const skills = SKILLS.map(([name, category], i) => ({
-  id: `SK-${100 + i}`,
-  name,
-  category,
-  freelancers: 120 + ((i * 337) % 2400),
-  jobs: 8 + ((i * 53) % 300),
-  hasTest: i % 3 !== 2,
-  active: i % 7 !== 6,
-}));

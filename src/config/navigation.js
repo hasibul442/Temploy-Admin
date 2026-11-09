@@ -41,14 +41,7 @@ export const NAV_SECTIONS = [
       { label: "Jobs", href: "/jobs", icon: LuBriefcase, badge: 12 },
       { label: "Offers", href: "/offers", icon: LuPackage },
       { label: "Orders", href: "/orders", icon: LuShoppingBag },
-      {
-        label: "Skills",
-        icon: LuSparkles,
-        children: [
-          { label: "All skills", href: "/skills" },
-          { label: "Skill tests", href: "/test" },
-        ],
-      },
+      { label: "Skills", href: "/skills", icon: LuSparkles },
     ],
   },
   {

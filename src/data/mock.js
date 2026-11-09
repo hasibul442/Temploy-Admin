@@ -78,7 +78,6 @@ export const pendingActions = [
   { label: "Disputes awaiting review", count: 3, href: "/disputes", tone: "error" },
   { label: "Reported gigs", count: 8, href: "/reports", tone: "error" },
   { label: "Jobs pending approval", count: 12, href: "/jobs", tone: "info" },
-  { label: "Skill tests to grade", count: 4, href: "/test", tone: "info" },
 ];
 
 const firstNames = ["Arif", "Mira", "Sakib", "Farzana", "Rafiq", "Tanvir", "Nadia", "Tom", "Lena", "Omar", "Priya", "Jonas", "Ayesha", "Daniel", "Sumaiya", "Kenji"];
