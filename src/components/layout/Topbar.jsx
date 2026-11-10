@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Cookies from "js-cookie";
+import { clearTokenCookie } from "@/utils/services/tokenCookie";
 import {
   Box,
   IconButton,
@@ -32,8 +32,8 @@ export default function Topbar({ onMenuClick }) {
   const router = useRouter();
   const [anchor, setAnchor] = useState(null);
 
-  const logout = () => {
-    Cookies.remove("token");
+  const logout = async () => {
+    await clearTokenCookie();
     router.push("/auth/login");
   };
 

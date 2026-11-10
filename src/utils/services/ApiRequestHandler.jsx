@@ -1,11 +1,12 @@
-import Cookies from 'js-cookie';
+import { clearTokenCookie } from '@/utils/services/tokenCookie';
 
 async function readCookie(name) {
    if (typeof window === 'undefined') {
       const { cookies } = await import('next/headers');
       return (await cookies()).get(name)?.value;
    }
-   return Cookies.get(name);
+   const match = document.cookie.split('; ').find((part) => part.startsWith(`${name}=`));
+   return match ? decodeURIComponent(match.slice(name.length + 1)) : undefined;
 }
 
 // The gateway's admin auth answers 401 (expired/invalid token, employee gone) or 403 with
@@ -13,14 +14,11 @@ async function readCookie(name) {
 const isSessionGone = (status, data) => status === 401 || data?.auth_status === false;
 
 let redirecting = false;
-// The proxy only checks that the cookie exists, so drop the dead token and go to login.
-// The promise never settles so the page doesn't flash an error while the browser navigates.
 function endSession() {
    if (typeof window === 'undefined') return { message: 'Session expired', response: { status: 401 } };
-   Cookies.remove('token');
    if (!redirecting) {
       redirecting = true;
-      window.location.replace('/auth/login');
+      clearTokenCookie().finally(() => window.location.replace('/auth/login'));
    }
    return new Promise(() => {});
 }
@@ -35,7 +33,7 @@ export async function ApiRequestHandler(props) {
        'Content-Type': 'application/json',
        Accept: "application/json",
        'Access-Control-Allow-Origin' : '*',
-    //    'Accept-Language': lang,
+       'Accept-Language': 'en',
     //    'Accept-Currency' : currency,
    };
     if (props.includeAuth == true) {

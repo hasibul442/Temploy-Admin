@@ -1,7 +1,7 @@
 "use client";
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import Cookies from "js-cookie";
+import { setTokenCookie } from "@/utils/services/tokenCookie";
 import {
   Box,
   Button,
@@ -133,8 +133,8 @@ export default function LoginPage() {
     setLoading(false);
   };
 
-  const finish = (body, remember) => {
-    Cookies.set("token", body.token.token, { sameSite: "lax", ...(remember ? { expires: 30 } : {}) });
+  const finish = async (body, remember) => {
+    await setTokenCookie(body.token.token, remember);
     saveDeviceId(body.device_id);
     toast.success(body.message || "Signed in");
     router.replace("/");
