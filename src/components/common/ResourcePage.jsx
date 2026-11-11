@@ -51,8 +51,10 @@ import { clay, clayRgb } from "@/theme/clay";
  *  filters?                 [{ field, label, options: [...] }]   ("Any" is added automatically)
  *  rowActions?(row, api)    => [{ label, icon?, onClick, tone?: "error", divider? }]
  *  detail?                  { title?(row), render(row, api) }    row click opens a side drawer
- *  form?                    { entity, fields: [...], defaults, toRow?(values), canDelete?(row), onSave?, onDelete? }  enables Add + Edit + Delete
- *                           field: { name, label, type: text|number|select|switch|textarea, options?, required?, helperText?, half? }
+ *  onRowClick?(row)         row click handler (e.g. open a details page); takes precedence over `detail`
+ *  form?                    { entity, fields: [...], defaults, toRow?(values), canEdit?(row), canDelete?(row), onSave?, onDelete? }  enables Add + Edit + Delete
+ *                           field: { name, label, type: text|number|email|password|select|switch|textarea, options?, required?, helperText?, half? }
+ *                                  select `options` are strings, or { value, label } when the stored value differs
  *                           onSave?(values, id, api)  async; for pages wired to the API. Resolve with the saved row to apply it,
  *                                                     or null to keep the dialog open (show your own error toast). id is null on Add.
  *                           onDelete?(row, api)       async; resolve true to remove the row locally.
@@ -78,6 +80,7 @@ export default function ResourcePage({
   headerActions,
   minWidth = 860,
   noun,
+  onRowClick,
 }) {
   const [rows, setRows] = useState(initialRows);
   const [tab, setTab] = useState(tabs?.options[0] ?? "All");
@@ -137,7 +140,7 @@ export default function ResourcePage({
     if (!form) return custom;
     return [
       ...custom,
-      { label: "Edit", icon: <LuPencil size={15} />, onClick: () => api.openEdit(row), divider: custom.length > 0 },
+      (!form.canEdit || form.canEdit(row)) && { label: "Edit", icon: <LuPencil size={15} />, onClick: () => api.openEdit(row), divider: custom.length > 0 },
       (!form.canDelete || form.canDelete(row)) && {
         label: "Delete",
         icon: <LuTrash2 size={15} />,
@@ -288,8 +291,8 @@ export default function ResourcePage({
                 <TableRow
                   key={row.id}
                   hover
-                  onClick={detail ? () => setDetailRow(row) : undefined}
-                  sx={detail ? { cursor: "pointer" } : undefined}
+                  onClick={onRowClick ? () => onRowClick(row) : detail ? () => setDetailRow(row) : undefined}
+                  sx={onRowClick || detail ? { cursor: "pointer" } : undefined}
                 >
                   {columns.map((c) => (
                     <TableCell key={c.key} align={c.align} sx={{ fontSize: 13.5 }}>
@@ -433,16 +436,18 @@ export function FormField({ field: f, value, onChange }) {
   if (f.type === "select") {
     return (
       <TextField select {...common} value={value ?? ""} onChange={(e) => onChange(e.target.value)} sx={span}>
-        {f.options.map((o) => (
-          <MenuItem key={o} value={o}>{o}</MenuItem>
-        ))}
+        {f.options.map((o) => {
+          const { value: v, label } = typeof o === "object" ? o : { value: o, label: o };
+          return <MenuItem key={v} value={v}>{label}</MenuItem>;
+        })}
       </TextField>
     );
   }
   return (
     <TextField
       {...common}
-      type={f.type === "number" ? "number" : "text"}
+      type={["number", "email", "password"].includes(f.type) ? f.type : "text"}
+      autoComplete={f.type === "password" ? "new-password" : undefined}
       multiline={f.type === "textarea"}
       minRows={f.type === "textarea" ? 3 : undefined}
       value={value ?? ""}
